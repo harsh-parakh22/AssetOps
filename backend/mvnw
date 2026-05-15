@@ -1,0 +1,44 @@
+#!/bin/sh
+# Maven wrapper script
+set -e
+
+# Find the project basedir
+findMavenProjectBaseDir() {
+  BASEDIR=$(dirname "$0")
+  BASEDIR=$(cd "$BASEDIR" && pwd -P)
+  while [ ! -f "$BASEDIR/pom.xml" ] && [ "$BASEDIR" != "/" ]; do
+    BASEDIR=$(dirname "$BASEDIR")
+  done
+  echo "$BASEDIR"
+}
+
+BASEDIR=$(findMavenProjectBaseDir)
+MVNW_DIR="$BASEDIR/.mvn/wrapper"
+MAVEN_WRAPPER_JAR="$MVNW_DIR/maven-wrapper.jar"
+MAVEN_WRAPPER_PROPERTIES="$MVNW_DIR/maven-wrapper.properties"
+
+# Read distribution URL
+DISTRIBUTION_URL=$(sed -n 's/.*distributionUrl=//p' "$MAVEN_WRAPPER_PROPERTIES" | tr -d '\r')
+
+# Determine Maven home
+MAVEN_HOME="$HOME/.m2/wrapper/dists/$(basename "$DISTRIBUTION_URL" .zip)"
+
+if [ ! -d "$MAVEN_HOME" ]; then
+  mkdir -p "$MAVEN_HOME"
+  wget -q "$DISTRIBUTION_URL" -O "$MAVEN_HOME/dist.zip"
+  unzip -q "$MAVEN_HOME/dist.zip" -d "$HOME/.m2/wrapper/dists/"
+  rm "$MAVEN_HOME/dist.zip"
+  ACTUAL_DIR=$(ls "$HOME/.m2/wrapper/dists/" | grep "apache-maven" | tail -1)
+  MAVEN_HOME="$HOME/.m2/wrapper/dists/$ACTUAL_DIR"
+fi
+
+MVN_CMD=$(find "$HOME/.m2/wrapper/dists/" -name "mvn" -type f 2>/dev/null | head -1)
+
+if [ -z "$MVN_CMD" ]; then
+  # Fallback: try system maven or download
+  if command -v mvn >/dev/null 2>&1; then
+    exec mvn "$@"
+  fi
+fi
+
+exec "$MVN_CMD" "$@"

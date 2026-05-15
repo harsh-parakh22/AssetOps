@@ -1,0 +1,113 @@
+spring:
+  application:
+    name: assetops-backend
+
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/assetops}
+    username: ${DB_USER:assetops}
+    password: ${DB_PASSWORD:assetops123}
+    hikari:
+      pool-name: AssetOpsPool
+      maximum-pool-size: 5
+      minimum-idle: 2
+      connection-timeout: 10000
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 2000ms
+      repositories:
+        enabled: false
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    admin:
+      fail-fast: false       # Don't crash startup if Kafka is temporarily unavailable
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        max.block.ms: 3000
+        request.timeout.ms: 3000
+        retries: 3
+    consumer:
+      group-id: assetops-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "com.assetops.event"
+        session.timeout.ms: 10000
+    listener:
+      ack-mode: manual
+      auto-startup: true
+      missing-topics-fatal: false  # Don't fail if topics aren't created yet
+
+  session:
+    store-type: none
+
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration
+      - org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration
+      - org.springframework.boot.autoconfigure.mail.MailSenderValidatorAutoConfiguration
+
+server:
+  port: ${PORT:8080}
+  servlet:
+    context-path: /api
+  tomcat:
+    max-threads: 50
+
+jwt:
+  secret: ${JWT_SECRET:dummy-dev-secret-key-change-it-in-production-settings}
+  access-token-expiry: 3600000
+  refresh-token-expiry: 604800000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      show-details: always
+    prometheus:
+      enabled: true
+
+app:
+  cors:
+    allowed-origins: ${CORS_ORIGINS:http://localhost:4200}
+  kafka:
+    topics:
+      asset-events: asset-events
+      request-events: request-events
+      notification-events: notification-events
+      audit-events: audit-events
+  lifecycle:
+    eol-warning-days: 60
+    refresh-check-cron: "0 0 8 * * MON"
+  gcp:
+    project-id: ${GCP_PROJECT_ID:assetops-project}
+
+logging:
+  level:
+    root: WARN
+    com.assetops: INFO
+    org.flywaydb: INFO

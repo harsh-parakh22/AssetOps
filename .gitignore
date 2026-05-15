@@ -1,0 +1,62 @@
+# ─── Java / Maven ────────────────────────────────────────────
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+hs_err_pid*
+
+# ─── IDE ─────────────────────────────────────────────────────
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.settings/
+.project
+.classpath
+*.launch
+
+# ─── Node / Angular ──────────────────────────────────────────
+node_modules/
+dist/
+.angular/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ─── Environment ─────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+*.env
+
+# ─── Docker ──────────────────────────────────────────────────
+.docker/
+
+# ─── Terraform ───────────────────────────────────────────────
+infra/terraform/.terraform/
+infra/terraform/terraform.tfstate
+infra/terraform/terraform.tfstate.backup
+infra/terraform/*.tfvars
+!infra/terraform/*.tfvars.example
+
+# ─── GCP ─────────────────────────────────────────────────────
+*.json
+!package.json
+!tsconfig*.json
+!angular.json
+
+# ─── OS ──────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# ─── Logs ────────────────────────────────────────────────────
+*.log
+logs/

@@ -1,0 +1,30 @@
+// Dashboard-specific styles extending globals
+// Most styles are in src/styles.scss
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 14px;
+}
+
+.right-col {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+@media (max-width: 900px) {
+  .two-col {
+    grid-template-columns: 1fr;
+  }
+  .right-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .right-col {
+    grid-template-columns: 1fr;
+  }
+}

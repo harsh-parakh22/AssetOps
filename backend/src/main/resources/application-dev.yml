@@ -1,0 +1,31 @@
+spring:
+  # Disable Redis-backed sessions in dev - use simple cookie sessions
+  session:
+    store-type: none
+
+  # Kafka - don't block startup if Kafka isn't ready yet
+  kafka:
+    admin:
+      fail-fast: false
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      properties:
+        max.block.ms: 5000
+        request.timeout.ms: 5000
+    consumer:
+      properties:
+        session.timeout.ms: 10000
+    listener:
+      missing-topics-fatal: false
+
+logging:
+  level:
+    com.assetops: DEBUG
+    org.springframework.kafka: WARN
+    org.springframework.security: WARN
+    org.hibernate.SQL: WARN
+
+management:
+  endpoint:
+    health:
+      show-details: always
