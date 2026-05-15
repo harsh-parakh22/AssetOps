@@ -48,8 +48,10 @@ infra/terraform/*.tfvars
 # ─── GCP ─────────────────────────────────────────────────────
 *.json
 !package.json
+!package-lock.json
 !tsconfig*.json
 !angular.json
+!proxy.conf.json
 
 # ─── OS ──────────────────────────────────────────────────────
 .DS_Store
