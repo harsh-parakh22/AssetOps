@@ -28,10 +28,7 @@ spring:
 
   data:
     redis:
-      url: ${SPRING_REDIS_URL:}
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
-      password: ${REDIS_PASSWORD:}
+      url: ${SPRING_REDIS_URL:redis://localhost:6379}
       timeout: 2000ms
       repositories:
         enabled: false
