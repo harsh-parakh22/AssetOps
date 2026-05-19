@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: '/api',
-  wsUrl: `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/api/ws`
+  apiUrl: 'https://assetops-backend.onrender.com/api',
+  wsUrl: 'wss://assetops-backend.onrender.com/api/ws'
 };
