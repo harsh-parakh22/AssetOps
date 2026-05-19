@@ -15,11 +15,8 @@ import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
-@SuppressWarnings("null")
-public class AssetEventProducer {
-
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private KafkaTemplate<String, Object> kafkaTemplate;
 
     @Value("${app.kafka.topics.asset-events}")        private String assetTopic;
     @Value("${app.kafka.topics.request-events}")      private String requestTopic;
@@ -95,6 +92,10 @@ public class AssetEventProducer {
     }
 
     private void send(String topic, String key, Object payload) {
+        if (kafkaTemplate == null) {
+            log.info("[KAFKA DISABLED] Event for topic {}: {}", topic, payload);
+            return;
+        }
         CompletableFuture<SendResult<String, Object>> future = kafkaTemplate.send(topic, key, payload);
         future.whenComplete((result, ex) -> {
             if (ex != null) {

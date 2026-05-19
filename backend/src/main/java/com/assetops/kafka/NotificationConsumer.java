@@ -21,6 +21,7 @@ import java.util.UUID;
 @Component
 @RequiredArgsConstructor
 @SuppressWarnings("null")
+@org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(name = "app.kafka.enabled", havingValue = "true", matchIfMissing = false)
 public class NotificationConsumer {
 
     private final NotificationRepository notificationRepository;

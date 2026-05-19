@@ -37,6 +37,10 @@ spring:
 
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    properties:
+      security.protocol: ${KAFKA_SECURITY_PROTOCOL:PLAINTEXT}
+      sasl.mechanism: ${KAFKA_SASL_MECHANISM:}
+      sasl.jaas.config: ${KAFKA_SASL_JAAS_CONFIG:}
     admin:
       fail-fast: false       # Don't crash startup if Kafka is temporarily unavailable
     producer:
@@ -95,6 +99,7 @@ app:
   cors:
     allowed-origins: ${CORS_ORIGINS:http://localhost:4200}
   kafka:
+    enabled: ${KAFKA_ENABLED:false}
     topics:
       asset-events: asset-events
       request-events: request-events

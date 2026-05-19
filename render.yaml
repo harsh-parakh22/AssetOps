@@ -1,0 +1,43 @@
+services:
+  # 1. PostgreSQL Database
+  - type: pgo
+    name: assetops-db
+    plan: free
+
+  # 2. Spring Boot Backend
+  - type: web
+    name: assetops-backend
+    env: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    healthCheckPath: /api/actuator/health
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: DB_URL
+        fromDatabase:
+          name: assetops-db
+          property: connectionString
+      - key: DB_USER
+        fromDatabase:
+          name: assetops-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: assetops-db
+          property: password
+      - key: REDIS_HOST
+        sync: false
+      - key: REDIS_PORT
+        sync: false
+      - key: REDIS_PASSWORD
+        sync: false
+      - key: KAFKA_BOOTSTRAP_SERVERS
+        sync: false
+      - key: KAFKA_SASL_JAAS_CONFIG
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGINS
+        sync: false
