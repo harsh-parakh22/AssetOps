@@ -1,8 +1,8 @@
-services:
-  # 1. PostgreSQL Database
-  - type: pgo
-    name: assetops-db
+databases:
+  - name: assetops-db
     plan: free
+
+services:
 
   # 2. Spring Boot Backend
   - type: web
