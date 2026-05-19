@@ -8,6 +8,7 @@ import org.springframework.kafka.config.TopicBuilder;
 
 @Configuration
 @SuppressWarnings("null")
+@org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(name = "app.kafka.enabled", havingValue = "true", matchIfMissing = false)
 public class KafkaConfig {
 
     @Value("${app.kafka.topics.asset-events}")
