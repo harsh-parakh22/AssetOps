@@ -52,6 +52,7 @@ infra/terraform/*.tfvars
 !tsconfig*.json
 !angular.json
 !proxy.conf.json
+!vercel.json
 
 # ─── OS ──────────────────────────────────────────────────────
 .DS_Store

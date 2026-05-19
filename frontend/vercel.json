@@ -1,0 +1,8 @@
+{
+  "outputDirectory": "dist/assetops-frontend/browser",
+  "cleanUrls": true,
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/.*", "dest": "/index.html" }
+  ]
+}
