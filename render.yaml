@@ -35,11 +35,7 @@ services:
         fromDatabase:
           name: assetops-db
           property: password
-      - key: REDIS_HOST
-        sync: false
-      - key: REDIS_PORT
-        sync: false
-      - key: REDIS_PASSWORD
+      - key: SPRING_REDIS_URL
         sync: false
       - key: KAFKA_BOOTSTRAP_SERVERS
         sync: false
