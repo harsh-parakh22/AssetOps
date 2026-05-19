@@ -12,6 +12,14 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
+import com.assetops.entity.Notification;
+import com.assetops.entity.User;
+import com.assetops.enums.NotificationType;
+import com.assetops.repository.NotificationRepository;
+import com.assetops.repository.UserRepository;
+import com.assetops.service.EmailService;
+import com.assetops.service.WebSocketNotificationService;
+
 @Slf4j
 @Component
 @SuppressWarnings("null")
@@ -19,6 +27,21 @@ public class AssetEventProducer {
 
     @org.springframework.beans.factory.annotation.Autowired(required = false)
     private KafkaTemplate<String, Object> kafkaTemplate;
+
+    @Value("${app.kafka.enabled:false}")
+    private boolean kafkaEnabled;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    private UserRepository userRepository;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    private NotificationRepository notificationRepository;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    private EmailService emailService;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    private WebSocketNotificationService wsService;
 
     @Value("${app.kafka.topics.asset-events}")        private String assetTopic;
     @Value("${app.kafka.topics.request-events}")      private String requestTopic;
@@ -64,6 +87,29 @@ public class AssetEventProducer {
     public void publishNotificationEvent(UUID targetUserId, String targetEmail,
                                           String type, String title, String message,
                                           UUID entityId, String entityType) {
+        if (!kafkaEnabled) {
+            log.info("[KAFKA DISABLED] Processing notification locally: user={}, type={}", targetUserId, type);
+            try {
+                User user = userRepository.findById(targetUserId).orElse(null);
+                if (user != null) {
+                    Notification notification = Notification.builder()
+                        .user(user)
+                        .type(NotificationType.valueOf(type))
+                        .title(title)
+                        .message(message)
+                        .entityId(entityId)
+                        .entityType(entityType)
+                        .build();
+                    notificationRepository.save(notification);
+                    wsService.sendToUser(targetUserId.toString(), notification);
+                    emailService.sendNotificationEmail(targetEmail, title, message);
+                }
+            } catch (Exception ex) {
+                log.error("Error processing notification locally: {}", ex.getMessage(), ex);
+            }
+            return;
+        }
+
         Map<String, String> event = new HashMap<>();
         event.put("eventId",      UUID.randomUUID().toString());
         event.put("targetUserId", targetUserId.toString());
@@ -80,6 +126,12 @@ public class AssetEventProducer {
     public void publishAuditEvent(String entityType, UUID entityId, String action,
                                    String oldValue, String newValue,
                                    String performedBy, String ipAddress) {
+        if (!kafkaEnabled) {
+            log.info("AUDIT | entity={} id={} action={} by={}",
+                entityType, entityId, action, performedBy);
+            return;
+        }
+
         Map<String, String> event = new HashMap<>();
         event.put("eventId",     UUID.randomUUID().toString());
         event.put("entityType",  entityType);
@@ -94,7 +146,7 @@ public class AssetEventProducer {
     }
 
     private void send(String topic, String key, Object payload) {
-        if (kafkaTemplate == null) {
+        if (!kafkaEnabled || kafkaTemplate == null) {
             log.info("[KAFKA DISABLED] Event for topic {}: {}", topic, payload);
             return;
         }
