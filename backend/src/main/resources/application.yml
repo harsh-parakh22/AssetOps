@@ -3,7 +3,7 @@ spring:
     name: assetops-backend
 
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/assetops}
+    url: ${DB_URL:jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:assetops}}
     username: ${DB_USER:assetops}
     password: ${DB_PASSWORD:assetops123}
     hikari:
