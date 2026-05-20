@@ -48,6 +48,10 @@ public class AssetRequestServiceImpl implements AssetRequestService {
                                                         Priority priority,
                                                         UUID userId,
                                                         Pageable pageable) {
+        User user = getCurrentUser();
+        if (user.getRole() == com.assetops.enums.Role.EMPLOYEE) {
+            userId = user.getId();
+        }
         Page<AssetRequest> page = requestRepository.findWithFilters(status, priority, userId, pageable);
         return PagedResponse.of(page.map(AssetRequestResponse::from));
     }
@@ -138,6 +142,14 @@ public class AssetRequestServiceImpl implements AssetRequestService {
         AssetRequest request = getOrThrow(id);
         if (!request.canReject()) {
             throw new BusinessException("Request " + request.getRequestNumber() + " cannot be rejected in status: " + request.getStatus());
+        }
+
+        if (review.notes() == null || review.notes().trim().isEmpty()) {
+            throw new BusinessException("Rejection reason is required");
+        }
+        String[] words = review.notes().trim().split("\\s+");
+        if (words.length < 3) {
+            throw new BusinessException("Rejection reason must contain at least 3 words");
         }
 
         User reviewer = getCurrentUser();

@@ -150,6 +150,10 @@ export class ApiService {
     return this.http.post<void>(`${this.base}/notifications/mark-all-read`, {});
   }
 
+  markRead(id: string): Observable<void> {
+    return this.http.post<void>(`${this.base}/notifications/${id}/read`, {});
+  }
+
   getUnreadCount(): Observable<{ count: number }> {
     return this.http.get<{ count: number }>(`${this.base}/notifications/unread-count`);
   }

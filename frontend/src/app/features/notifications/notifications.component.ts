@@ -89,9 +89,13 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
   markRead(n: Notification) {
     if (!n.isRead) {
-      n.isRead = true;
-      this.unread.update(c => Math.max(0, c - 1));
-      this.ws.decrementUnread();
+      this.api.markRead(n.id).subscribe({
+        next: () => {
+          n.isRead = true;
+          this.unread.update(c => Math.max(0, c - 1));
+          this.ws.decrementUnread();
+        }
+      });
     }
   }
 

@@ -76,6 +76,14 @@ public class NotificationController {
         return ResponseEntity.ok().build();
     }
 
+    @org.springframework.transaction.annotation.Transactional
+    @PostMapping("/{id}/read")
+    public ResponseEntity<Void> markRead(@PathVariable java.util.UUID id, Authentication auth) {
+        User user = getUser(auth.getName());
+        notificationRepository.markAsRead(id, user.getId());
+        return ResponseEntity.ok().build();
+    }
+
     private User getUser(String email) {
         return userRepository.findByEmail(email)
             .orElseThrow(() -> new BusinessException("User not found: " + email));

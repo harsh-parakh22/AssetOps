@@ -154,13 +154,16 @@ import { AssetRequest, RequestStatus, Priority, Asset } from '../../shared/model
             <textarea formControlName="notes" rows="3"
                       [placeholder]="reviewAction() === 'reject' ? 'Reason for rejection…' : 'Any notes for the employee…'">
             </textarea>
+            <div class="notif-time" *ngIf="reviewAction() === 'reject' && isReviewFormInvalid() && !submitting()" style="color: var(--red); margin-top: 4px; font-size: 11px;">
+              * Rejection reason is required (minimum 3 words).
+            </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-ghost" (click)="closeReviewModal()">Cancel</button>
             <button type="submit" class="btn"
                     [class.btn-primary]="reviewAction() === 'approve'"
                     [class.btn-danger]="reviewAction() === 'reject'"
-                    [disabled]="submitting()">
+                    [disabled]="isReviewFormInvalid()">
               {{ submitting() ? 'Processing…' : (reviewAction() === 'approve' ? 'Confirm Approve' : 'Confirm Reject') }}
             </button>
           </div>
@@ -431,5 +434,16 @@ export class RequestsComponent implements OnInit {
   closeDetailModal(): void {
     this.showDetailModal.set(false);
     this.selectedRequest.set(null);
+  }
+
+  isReviewFormInvalid(): boolean {
+    if (this.submitting()) return true;
+    if (this.reviewAction() === 'reject') {
+      const notesVal = (this.reviewForm.get('notes')?.value || '').trim();
+      if (!notesVal) return true;
+      const words = notesVal.split(/\s+/).filter((w: string) => w.length > 0);
+      return words.length < 3;
+    }
+    return false;
   }
 }
