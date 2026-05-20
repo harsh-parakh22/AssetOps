@@ -101,7 +101,7 @@ interface NavItem {
         <a class="bn-item" routerLink="/dashboard" routerLinkActive="active" *ngIf="auth.isAdmin()">
           <span class="bn-icon">⬡</span><span>Home</span>
         </a>
-        <a class="bn-item" routerLink="/inventory" routerLinkActive="active">
+        <a class="bn-item" routerLink="/inventory" routerLinkActive="active" *ngIf="auth.isAdmin()">
           <span class="bn-icon">◧</span><span>Assets</span>
         </a>
         <a class="bn-item" routerLink="/requests" routerLinkActive="active">

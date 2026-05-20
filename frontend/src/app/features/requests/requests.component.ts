@@ -331,8 +331,15 @@ export class RequestsComponent implements OnInit {
   }
 
   loadPendingCount(): void {
-    this.api.getRequests({ status: 'PENDING', page: 0, size: 1 })
-      .subscribe(r => this.pendingCount.set(r.totalElements));
+    const userId = this.auth.currentUserSignal()?.id;
+    const isAdmin = this.auth.isAdmin();
+
+    this.api.getRequests({
+      status: 'PENDING',
+      userId: !isAdmin ? userId : undefined,
+      page: 0,
+      size: 1
+    }).subscribe(r => this.pendingCount.set(r.totalElements));
   }
 
   setTab(status: RequestStatus | ''): void {
