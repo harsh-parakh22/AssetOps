@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
 @Disabled("Disabled in CI/CD to prevent infrastructure dependency issues")
-@SuppressWarnings({"null", "resource"})
+@SuppressWarnings("resource")
 class AssetOpsIntegrationTest {
 
     @Container

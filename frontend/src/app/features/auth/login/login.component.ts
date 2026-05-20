@@ -15,7 +15,7 @@ import { AuthService } from '../../../core/services/auth.service';
         <div class="auth-logo">
           <div class="logo-mark">IT</div>
           <div>
-            <div class="auth-brand">AssetOps</div>
+            <div class="auth-brand">ItVault</div>
             <div class="auth-tagline">IT ASSET MANAGEMENT</div>
           </div>
         </div>
@@ -34,7 +34,7 @@ import { AuthService } from '../../../core/services/auth.service';
           <form [formGroup]="loginForm" (ngSubmit)="login()">
             <div class="form-group" style="margin-bottom:14px">
               <label>Email address</label>
-              <input type="email" formControlName="email" placeholder="admin@assetops.com" autocomplete="email" />
+              <input type="email" formControlName="email" placeholder="Enter your email" autocomplete="email" />
             </div>
             <div class="form-group" style="margin-bottom:20px">
               <label>Password</label>
@@ -44,7 +44,6 @@ import { AuthService } from '../../../core/services/auth.service';
               {{ loading() ? 'Signing in…' : 'Sign in' }}
             </button>
           </form>
-          <p class="auth-hint">Demo: admin&#64;assetops.com / Admin&#64;123</p>
         </ng-container>
 
         <!-- REGISTER FORM -->
@@ -120,7 +119,7 @@ export class LoginComponent {
     this.auth.login(this.loginForm.value as any).subscribe({
       next: () => {
         const ret = this.route.snapshot.queryParamMap.get('returnUrl');
-        this.router.navigateByUrl(ret || (this.auth.isAdmin() ? '/dashboard' : '/inventory'));
+        this.router.navigateByUrl(ret || (this.auth.isAdmin() ? '/dashboard' : '/requests'));
       },
       error: (err) => {
         this.error.set(this.extractErrorMessage(err, 'Invalid email or password'));

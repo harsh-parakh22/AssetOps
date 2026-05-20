@@ -39,7 +39,6 @@ import java.util.concurrent.atomic.AtomicLong;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-@SuppressWarnings("null")
 public class AssetServiceImpl implements AssetService {
 
     private final AssetRepository assetRepository;

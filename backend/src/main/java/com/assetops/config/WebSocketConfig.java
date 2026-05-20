@@ -17,7 +17,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private final WebSocketAuthInterceptor wsAuthInterceptor;
 
     @Override
-    @SuppressWarnings("null")
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/topic", "/queue");
         config.setApplicationDestinationPrefixes("/app");
@@ -25,14 +24,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     }
 
     @Override
-    @SuppressWarnings("null")
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
             .setAllowedOriginPatterns("*");
     }
 
     @Override
-    @SuppressWarnings("null")
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(wsAuthInterceptor);
     }

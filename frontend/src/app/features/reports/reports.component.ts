@@ -211,7 +211,7 @@ export class ReportsComponent implements OnInit {
     const csv = [['Category', 'Count', 'Share'], ...rows].map(r => r.join(',')).join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-    a.download = 'assetops-report.csv'; a.click();
+    a.download = 'itvault-report.csv'; a.click();
   }
 
   exportPdf() {

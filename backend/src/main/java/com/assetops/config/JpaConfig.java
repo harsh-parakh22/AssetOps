@@ -14,7 +14,6 @@ import java.util.Optional;
 public class JpaConfig {
 
     @Bean
-    @SuppressWarnings("null")
     public AuditorAware<String> auditorProvider() {
         return () -> {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();

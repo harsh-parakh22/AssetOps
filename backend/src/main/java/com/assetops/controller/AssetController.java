@@ -32,7 +32,6 @@ public class AssetController {
     private final AssetService assetService;
 
     @GetMapping
-    @SuppressWarnings("null")
     @Operation(summary = "Search assets with filters and pagination")
     public ResponseEntity<PagedResponse<AssetResponse>> search(
         @RequestParam(required = false) AssetStatus status,

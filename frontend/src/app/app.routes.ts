@@ -15,52 +15,54 @@ export const routes: Routes = [
     children: [
       { 
         path: '', 
-        redirectTo: () => inject(AuthService).isAdmin() ? 'dashboard' : 'inventory', 
+        redirectTo: () => inject(AuthService).isAdmin() ? 'dashboard' : 'requests', 
         pathMatch: 'full' 
       },
       {
         path: 'dashboard',
         loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
         canActivate: [adminGuard],
-        title: 'Dashboard | AssetOps'
+        title: 'Dashboard | ItVault'
       },
       {
         path: 'inventory',
         loadComponent: () => import('./features/inventory/inventory.component').then(m => m.InventoryComponent),
-        title: 'Inventory | AssetOps'
+        canActivate: [adminGuard],
+        title: 'Inventory | ItVault'
       },
       {
         path: 'inventory/:id',
         loadComponent: () => import('./features/inventory/asset-detail/asset-detail.component').then(m => m.AssetDetailComponent),
-        title: 'Asset Detail | AssetOps'
+        canActivate: [adminGuard],
+        title: 'Asset Detail | ItVault'
       },
       {
         path: 'requests',
         loadComponent: () => import('./features/requests/requests.component').then(m => m.RequestsComponent),
-        title: 'Requests | AssetOps'
+        title: 'Requests | ItVault'
       },
       {
         path: 'lifecycle',
         loadComponent: () => import('./features/lifecycle/lifecycle.component').then(m => m.LifecycleComponent),
         canActivate: [adminGuard],
-        title: 'Lifecycle | AssetOps'
+        title: 'Lifecycle | ItVault'
       },
       {
         path: 'users',
         loadComponent: () => import('./features/users/users.component').then(m => m.UsersComponent),
         canActivate: [adminGuard],
-        title: 'Users | AssetOps'
+        title: 'Users | ItVault'
       },
       {
         path: 'reports',
         loadComponent: () => import('./features/reports/reports.component').then(m => m.ReportsComponent),
         canActivate: [adminGuard],
-        title: 'Reports | AssetOps'
+        title: 'Reports | ItVault'
       },
       {
         path: 'notifications',
         loadComponent: () => import('./features/notifications/notifications.component').then(m => m.NotificationsComponent),
-        title: 'Notifications | AssetOps'
+        title: 'Notifications | ItVault'
       }
     ]
   },

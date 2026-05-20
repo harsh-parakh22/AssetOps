@@ -26,6 +26,7 @@ public class User extends BaseEntity {
     private String email;
 
     @Column(nullable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private String password;
 
     @Column(length = 100)
@@ -47,9 +48,11 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "assignedTo", fetch = FetchType.LAZY)
     @Builder.Default
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<Asset> assignedAssets = new ArrayList<>();
 
     @OneToMany(mappedBy = "requestedBy", fetch = FetchType.LAZY)
     @Builder.Default
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<AssetRequest> requests = new ArrayList<>();
 }

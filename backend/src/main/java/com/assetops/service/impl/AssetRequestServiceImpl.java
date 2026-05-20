@@ -34,7 +34,6 @@ import java.util.concurrent.atomic.AtomicLong;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-@SuppressWarnings("null")
 public class AssetRequestServiceImpl implements AssetRequestService {
 
     private final AssetRequestRepository requestRepository;
@@ -83,8 +82,12 @@ public class AssetRequestServiceImpl implements AssetRequestService {
         final AssetRequest savedRequest = requestRepository.save(request);
         log.info("Request submitted: {} by {}", savedRequest.getRequestNumber(), email);
 
-        // Notify all IT admins
-        userRepository.findByRole(com.assetops.enums.Role.IT_ADMIN).forEach(admin ->
+        // Notify all IT and Super admins
+        java.util.List<User> admins = new java.util.ArrayList<>();
+        admins.addAll(userRepository.findByRole(com.assetops.enums.Role.IT_ADMIN));
+        admins.addAll(userRepository.findByRole(com.assetops.enums.Role.SUPER_ADMIN));
+
+        admins.forEach(admin ->
             eventProducer.publishNotificationEvent(admin.getId(), admin.getEmail(),
                 "REQUEST_SUBMITTED", "New Asset Request",
                 requestor.getName() + " requested: " + describeAsset(req, asset),

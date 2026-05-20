@@ -32,8 +32,8 @@ interface NavItem {
           <div class="logo">
             <div class="logo-icon">IT</div>
             <div class="logo-text-wrap">
-              <div class="logo-name">AssetOps</div>
-              <div class="logo-version">v1.0.0 · PROD</div>
+              <div class="logo-name">ItVault</div>
+              <div class="logo-version">v1.0.0</div>
             </div>
             <button class="sidebar-close" (click)="closeSidebar()">✕</button>
           </div>

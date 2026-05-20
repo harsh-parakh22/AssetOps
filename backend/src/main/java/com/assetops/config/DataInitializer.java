@@ -19,7 +19,6 @@ public class DataInitializer {
     private final PasswordEncoder passwordEncoder;
 
     @Bean
-    @SuppressWarnings("null")
     public CommandLineRunner initData() {
         return args -> {
             // Create Super Admin if not exists

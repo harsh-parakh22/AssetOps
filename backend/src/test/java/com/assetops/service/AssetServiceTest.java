@@ -34,7 +34,6 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 @DisplayName("AssetService Tests")
-@SuppressWarnings("null")
 class AssetServiceTest {
 
     @Mock AssetRepository assetRepository;

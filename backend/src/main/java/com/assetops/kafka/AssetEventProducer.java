@@ -22,7 +22,6 @@ import com.assetops.service.WebSocketNotificationService;
 
 @Slf4j
 @Component
-@SuppressWarnings("null")
 public class AssetEventProducer {
 
     @org.springframework.beans.factory.annotation.Autowired(required = false)

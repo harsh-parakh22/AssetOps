@@ -88,11 +88,18 @@ import { Asset, AssetCategory, User } from '../../../shared/models';
           </div>
           <ng-template #notAssigned>
             <div class="unassigned-msg">
-              <div class="unassigned-icon">◎</div>
-              <div>Available for assignment</div>
-              <button class="btn btn-primary" style="margin-top:12px" *ngIf="auth.isAdmin()" (click)="openAssignModal()">
-                Assign to User
-              </button>
+              <ng-container *ngIf="asset()!.status === 'RETIRED'; else normalUnassigned">
+                <div class="unassigned-icon" style="color: var(--red)">✕</div>
+                <div>Retired Asset</div>
+                <p style="font-size:12px;color:var(--text3);margin-top:4px">This asset is retired and cannot be assigned.</p>
+              </ng-container>
+              <ng-template #normalUnassigned>
+                <div class="unassigned-icon">◎</div>
+                <div>Available for assignment</div>
+                <button class="btn btn-primary" style="margin-top:12px" *ngIf="auth.isAdmin()" (click)="openAssignModal()">
+                  Assign to User
+                </button>
+              </ng-template>
             </div>
           </ng-template>
         </div>

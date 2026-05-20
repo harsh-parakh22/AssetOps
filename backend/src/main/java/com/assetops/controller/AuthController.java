@@ -23,7 +23,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
-@SuppressWarnings("null")
 public class AuthController {
 
     private final AuthenticationManager authManager;
