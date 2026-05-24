@@ -27,6 +27,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/assets")
 @RequiredArgsConstructor
+@SuppressWarnings("null")
 public class AssetController {
 
     private final AssetService assetService;

@@ -33,33 +33,7 @@ spring:
       repositories:
         enabled: false
 
-  kafka:
-    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
-    properties:
-      security.protocol: ${KAFKA_SECURITY_PROTOCOL:PLAINTEXT}
-      sasl.mechanism: ${KAFKA_SASL_MECHANISM:}
-      sasl.jaas.config: ${KAFKA_SASL_JAAS_CONFIG:}
-    admin:
-      fail-fast: false       # Don't crash startup if Kafka is temporarily unavailable
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-      properties:
-        max.block.ms: 3000
-        request.timeout.ms: 3000
-        retries: 3
-    consumer:
-      group-id: assetops-group
-      auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      properties:
-        spring.json.trusted.packages: "com.assetops.event"
-        session.timeout.ms: 10000
-    listener:
-      ack-mode: manual
-      auto-startup: true
-      missing-topics-fatal: false  # Don't fail if topics aren't created yet
+
 
   session:
     store-type: none
@@ -96,13 +70,7 @@ management:
 app:
   cors:
     allowed-origins: ${CORS_ORIGINS:http://localhost:4200}
-  kafka:
-    enabled: ${KAFKA_ENABLED:false}
-    topics:
-      asset-events: asset-events
-      request-events: request-events
-      notification-events: notification-events
-      audit-events: audit-events
+
   lifecycle:
     eol-warning-days: 60
     refresh-check-cron: "0 0 8 * * MON"

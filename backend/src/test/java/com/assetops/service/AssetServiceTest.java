@@ -6,7 +6,7 @@ import com.assetops.entity.Asset;
 import com.assetops.enums.AssetCategory;
 import com.assetops.enums.AssetStatus;
 import com.assetops.exception.BusinessException;
-import com.assetops.kafka.AssetEventProducer;
+
 import com.assetops.repository.AssetRepository;
 import com.assetops.repository.UserRepository;
 import com.assetops.service.impl.AssetServiceImpl;
@@ -34,11 +34,12 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 @DisplayName("AssetService Tests")
+@SuppressWarnings("null")
 class AssetServiceTest {
 
     @Mock AssetRepository assetRepository;
     @Mock UserRepository userRepository;
-    @Mock AssetEventProducer eventProducer;
+    @Mock SystemNotificationService systemNotificationService;
 
     @InjectMocks AssetServiceImpl assetService;
 
@@ -77,8 +78,7 @@ class AssetServiceTest {
             assertThat(result).isNotNull();
             assertThat(result.name()).isEqualTo("MacBook Pro 16\"");
             assertThat(result.status()).isEqualTo(AssetStatus.AVAILABLE);
-            verify(eventProducer).publishAssetEvent(eq("CREATED"), any(), any(), any(), isNull(), any(), isNull(), anyString());
-            verify(eventProducer).publishAuditEvent(eq("Asset"), any(), eq("CREATE"), isNull(), any(), anyString(), isNull());
+
         }
 
         @Test

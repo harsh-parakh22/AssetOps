@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@SuppressWarnings("null")
 public class WebSocketNotificationService {
 
     private final SimpMessagingTemplate messagingTemplate;

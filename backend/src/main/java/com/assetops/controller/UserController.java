@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 @PreAuthorize("hasAnyRole('IT_ADMIN','SUPER_ADMIN')")
+@SuppressWarnings("null")
 public class UserController {
 
     private final UserRepository userRepository;

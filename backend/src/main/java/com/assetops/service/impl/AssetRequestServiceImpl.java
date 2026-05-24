@@ -11,7 +11,7 @@ import com.assetops.enums.AssetStatus;
 import com.assetops.enums.Priority;
 import com.assetops.enums.RequestStatus;
 import com.assetops.exception.BusinessException;
-import com.assetops.kafka.AssetEventProducer;
+import com.assetops.service.SystemNotificationService;
 import com.assetops.repository.AssetRepository;
 import com.assetops.repository.AssetRequestRepository;
 import com.assetops.repository.UserRepository;
@@ -34,12 +34,13 @@ import java.util.concurrent.atomic.AtomicLong;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@SuppressWarnings("null")
 public class AssetRequestServiceImpl implements AssetRequestService {
 
     private final AssetRequestRepository requestRepository;
     private final AssetRepository assetRepository;
     private final UserRepository userRepository;
-    private final AssetEventProducer eventProducer;
+    private final SystemNotificationService systemNotificationService;
 
     private final AtomicLong reqSequence = new AtomicLong(1000);
 
@@ -92,14 +93,11 @@ public class AssetRequestServiceImpl implements AssetRequestService {
         admins.addAll(userRepository.findByRole(com.assetops.enums.Role.SUPER_ADMIN));
 
         admins.forEach(admin ->
-            eventProducer.publishNotificationEvent(admin.getId(), admin.getEmail(),
+            systemNotificationService.publishNotificationEvent(admin.getId(), admin.getEmail(),
                 "REQUEST_SUBMITTED", "New Asset Request",
                 requestor.getName() + " requested: " + describeAsset(req, asset),
                 savedRequest.getId(), "AssetRequest")
         );
-
-        eventProducer.publishRequestEvent("SUBMITTED", savedRequest.getId(), savedRequest.getRequestNumber(),
-            requestor.getId(), null, null, RequestStatus.PENDING, req.reason(), email);
 
         return AssetRequestResponse.from(savedRequest);
     }
@@ -114,7 +112,6 @@ public class AssetRequestServiceImpl implements AssetRequestService {
         }
 
         User reviewer = getCurrentUser();
-        RequestStatus oldStatus = request.getStatus();
 
         request.setStatus(RequestStatus.APPROVED);
         request.setReviewedBy(reviewer);
@@ -122,11 +119,7 @@ public class AssetRequestServiceImpl implements AssetRequestService {
         request.setReviewerNotes(review.notes());
         request = requestRepository.save(request);
 
-        eventProducer.publishRequestEvent("APPROVED", request.getId(), request.getRequestNumber(),
-            request.getRequestedBy().getId(), reviewer.getId(),
-            oldStatus, RequestStatus.APPROVED, review.notes(), reviewer.getEmail());
-
-        eventProducer.publishNotificationEvent(
+        systemNotificationService.publishNotificationEvent(
             request.getRequestedBy().getId(), request.getRequestedBy().getEmail(),
             "REQUEST_APPROVED", "Request Approved ✓",
             "Your request " + request.getRequestNumber() + " has been approved.",
@@ -153,7 +146,6 @@ public class AssetRequestServiceImpl implements AssetRequestService {
         }
 
         User reviewer = getCurrentUser();
-        RequestStatus oldStatus = request.getStatus();
 
         request.setStatus(RequestStatus.REJECTED);
         request.setReviewedBy(reviewer);
@@ -161,11 +153,7 @@ public class AssetRequestServiceImpl implements AssetRequestService {
         request.setReviewerNotes(review.notes());
         request = requestRepository.save(request);
 
-        eventProducer.publishRequestEvent("REJECTED", request.getId(), request.getRequestNumber(),
-            request.getRequestedBy().getId(), reviewer.getId(),
-            oldStatus, RequestStatus.REJECTED, review.notes(), reviewer.getEmail());
-
-        eventProducer.publishNotificationEvent(
+        systemNotificationService.publishNotificationEvent(
             request.getRequestedBy().getId(), request.getRequestedBy().getEmail(),
             "REQUEST_REJECTED", "Request Rejected",
             "Your request " + request.getRequestNumber() + " was rejected. Reason: " + review.notes(),
@@ -203,14 +191,11 @@ public class AssetRequestServiceImpl implements AssetRequestService {
         request.setReturnDueDate(LocalDateTime.now().plusMonths(12));
         request = requestRepository.save(request);
 
-        eventProducer.publishNotificationEvent(
+        systemNotificationService.publishNotificationEvent(
             request.getRequestedBy().getId(), request.getRequestedBy().getEmail(),
             "REQUEST_ALLOCATED", "Asset Allocated 🎉",
             asset.getName() + " (" + asset.getAssetTag() + ") has been allocated to you.",
             request.getId(), "AssetRequest");
-
-        eventProducer.publishAuditEvent("AssetRequest", request.getId(), "ALLOCATE",
-            null, asset.getAssetTag(), currentUserEmail(), null);
 
         return AssetRequestResponse.from(request);
     }

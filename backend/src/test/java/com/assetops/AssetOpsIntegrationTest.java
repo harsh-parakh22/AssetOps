@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
 @Disabled("Disabled in CI/CD to prevent infrastructure dependency issues")
-@SuppressWarnings("resource")
+@SuppressWarnings({"resource", "null"})
 class AssetOpsIntegrationTest {
 
     @Container
@@ -40,11 +40,9 @@ class AssetOpsIntegrationTest {
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);
         // Use embedded for tests
-        registry.add("spring.kafka.bootstrap-servers", () -> "localhost:9092");
         registry.add("spring.data.redis.host", () -> "localhost");
         registry.add("spring.autoconfigure.exclude",
-            () -> "org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration," +
-                  "org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration");
+            () -> "org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration");
     }
 
     @LocalServerPort

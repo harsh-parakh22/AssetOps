@@ -2,7 +2,7 @@ package com.assetops.scheduler;
 
 import com.assetops.enums.AssetStatus;
 import com.assetops.enums.LifecycleStage;
-import com.assetops.kafka.AssetEventProducer;
+import com.assetops.service.SystemNotificationService;
 import com.assetops.repository.AssetRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,7 @@ import java.time.LocalDate;
 public class AssetLifecycleScheduler {
 
     private final AssetRepository assetRepository;
-    private final AssetEventProducer eventProducer;
+    private final SystemNotificationService systemNotificationService;
 
     @Value("${app.lifecycle.eol-warning-days:60}")
     private int eolWarningDays;
@@ -52,7 +52,7 @@ public class AssetLifecycleScheduler {
 
                     // Notify assigned user and IT admins
                     if (asset.getAssignedTo() != null) {
-                        eventProducer.publishNotificationEvent(
+                        systemNotificationService.publishNotificationEvent(
                             asset.getAssignedTo().getId(),
                             asset.getAssignedTo().getEmail(),
                             "EOL_WARNING",

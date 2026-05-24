@@ -11,7 +11,7 @@ import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
+
 
 /**
  * Intercepts STOMP CONNECT frames and validates the JWT token
@@ -22,6 +22,7 @@ import org.springframework.util.StringUtils;
 @Slf4j
 @Component
 @RequiredArgsConstructor
+@SuppressWarnings("null")
 public class WebSocketAuthInterceptor implements ChannelInterceptor {
 
     private final JwtService jwtService;
@@ -36,7 +37,7 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
         }
 
         String authHeader = accessor.getFirstNativeHeader("Authorization");
-        if (!StringUtils.hasText(authHeader) || !authHeader.startsWith("Bearer ")) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             log.warn("WebSocket CONNECT without valid Authorization header");
             return message;
         }

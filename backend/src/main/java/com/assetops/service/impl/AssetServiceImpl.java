@@ -12,7 +12,7 @@ import com.assetops.enums.AssetStatus;
 import com.assetops.enums.LifecycleStage;
 import com.assetops.exception.AssetNotFoundException;
 import com.assetops.exception.BusinessException;
-import com.assetops.kafka.AssetEventProducer;
+import com.assetops.service.SystemNotificationService;
 import com.assetops.repository.AssetRepository;
 import com.assetops.repository.UserRepository;
 import com.assetops.service.AssetService;
@@ -22,7 +22,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,11 +39,12 @@ import java.util.concurrent.atomic.AtomicLong;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@SuppressWarnings("null")
 public class AssetServiceImpl implements AssetService {
 
     private final AssetRepository assetRepository;
     private final UserRepository userRepository;
-    private final AssetEventProducer eventProducer;
+    private final SystemNotificationService systemNotificationService;
 
     // Thread-safe sequence for tag generation
     private final AtomicLong tagSequence = new AtomicLong(
@@ -91,10 +92,7 @@ public class AssetServiceImpl implements AssetService {
         asset = assetRepository.save(asset);
         log.info("Asset created: {} [{}]", asset.getName(), asset.getAssetTag());
 
-        eventProducer.publishAssetEvent("CREATED", asset.getId(), asset.getAssetTag(),
-            asset.getName(), null, asset.getStatus(), null, currentUser());
-        eventProducer.publishAuditEvent("Asset", asset.getId(), "CREATE",
-            null, asset.getName(), currentUser(), null);
+
 
         return AssetResponse.from(asset);
     }
@@ -104,7 +102,6 @@ public class AssetServiceImpl implements AssetService {
     @CacheEvict(value = {"assets", "asset-stats", "dashboard-stats"}, allEntries = true)
     public AssetResponse update(UUID id, AssetUpdateRequest req) {
         Asset asset = getAssetOrThrow(id);
-        String before = asset.getName() + " | " + asset.getStatus();
 
         if (req.name() != null) asset.setName(req.name());
         if (req.description() != null) asset.setDescription(req.description());
@@ -119,8 +116,7 @@ public class AssetServiceImpl implements AssetService {
         updateLifecycleStage(asset);
         asset = assetRepository.save(asset);
 
-        eventProducer.publishAuditEvent("Asset", asset.getId(), "UPDATE",
-            before, asset.getName() + " | " + asset.getStatus(), currentUser(), null);
+
 
         return AssetResponse.from(asset);
     }
@@ -137,15 +133,12 @@ public class AssetServiceImpl implements AssetService {
             throw new BusinessException("Asset " + asset.getAssetTag() + " is not available for assignment.");
         }
 
-        AssetStatus oldStatus = asset.getStatus();
         asset.setAssignedTo(user);
         asset.setAssignedDate(LocalDate.now());
         asset.setStatus(AssetStatus.ASSIGNED);
         asset = assetRepository.save(asset);
 
-        eventProducer.publishAssetEvent("ASSIGNED", asset.getId(), asset.getAssetTag(),
-            asset.getName(), oldStatus, asset.getStatus(), userId, currentUser());
-        eventProducer.publishNotificationEvent(userId, user.getEmail(),
+        systemNotificationService.publishNotificationEvent(userId, user.getEmail(),
             "ASSET_ASSIGNED", "Asset Assigned",
             "'" + asset.getName() + "' (" + asset.getAssetTag() + ") has been assigned to you.",
             asset.getId(), "Asset");
@@ -164,18 +157,14 @@ public class AssetServiceImpl implements AssetService {
         }
 
         User previousUser = asset.getAssignedTo();
-        AssetStatus oldStatus = asset.getStatus();
 
         asset.setAssignedTo(null);
         asset.setAssignedDate(null);
         asset.setStatus(AssetStatus.AVAILABLE);
         asset = assetRepository.save(asset);
 
-        eventProducer.publishAssetEvent("RETURNED", asset.getId(), asset.getAssetTag(),
-            asset.getName(), oldStatus, asset.getStatus(), null, currentUser());
-
         if (previousUser != null) {
-            eventProducer.publishNotificationEvent(previousUser.getId(), previousUser.getEmail(),
+            systemNotificationService.publishNotificationEvent(previousUser.getId(), previousUser.getEmail(),
                 "ASSET_RETURNED", "Asset Returned",
                 "'" + asset.getName() + "' has been successfully returned.",
                 asset.getId(), "Asset");
@@ -242,8 +231,5 @@ public class AssetServiceImpl implements AssetService {
             .orElseThrow(() -> new AssetNotFoundException(id));
     }
 
-    private String currentUser() {
-        var auth = SecurityContextHolder.getContext().getAuthentication();
-        return auth != null ? auth.getName() : "system";
-    }
 }
+

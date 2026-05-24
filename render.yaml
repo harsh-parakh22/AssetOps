@@ -37,10 +37,6 @@ services:
           property: password
       - key: SPRING_REDIS_URL
         sync: false
-      - key: KAFKA_BOOTSTRAP_SERVERS
-        sync: false
-      - key: KAFKA_SASL_JAAS_CONFIG
-        sync: false
       - key: JWT_SECRET
         generateValue: true
       - key: CORS_ORIGINS
