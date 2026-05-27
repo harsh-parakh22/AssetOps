@@ -1,7 +1,7 @@
 # AssetOps — IT Asset Management System
 
 Full-stack enterprise application for managing IT asset lifecycle.
-**Java 21 + Spring Boot 3** · **Angular 18** · **GCP Cloud Run** · **Redis** · **Kafka** · **Docker**
+**Java 21 + Spring Boot 3** · **Angular 18** · **Render** · **Vercel** · **Upstash Redis** · **Docker**
 
 ---
 
@@ -9,27 +9,19 @@ Full-stack enterprise application for managing IT asset lifecycle.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                        GCP Cloud Run                            │
 │                                                                 │
-│   ┌──────────────┐      ┌──────────────────────────────────┐   │
-│   │   Angular    │─────▶│       Spring Boot API            │   │
-│   │  (Frontend)  │      │    /api/* + WebSocket /ws        │   │
-│   └──────────────┘      └──────┬───────────────┬───────────┘   │
-│                                │               │               │
-│                         ┌──────▼──┐     ┌──────▼──┐           │
-│                         │ Cloud   │     │  Redis  │           │
-│                         │  SQL    │     │ (Cache/ │           │
-│                         │(Postgres│     │Session) │           │
-│                         └─────────┘     └─────────┘           │
+│   ┌──────────────┐      ┌──────────────────────────────────┐    │
+│   │   Angular    │─────▶│       Spring Boot API            │    │
+│   │  (Vercel)    │      │    /api/* + WebSocket /ws        │    │
+│   └──────────────┘      └──────┬───────────────┬───────────┘    │
+│                                │               │                │
+│                         ┌──────▼──┐     ┌──────▼──┐             │
+│                         │ Postgres│     │ Upstash │             │
+│                         │    DB   │     │ (Redis) │             │
+│                         │ (Render)│     │         │             │
+│                         └─────────┘     └─────────┘             │
 │                                                                 │
-│   ┌─────────────────────────────────────────────────────────┐  │
-│   │               Kafka / Cloud Pub/Sub                     │  │
-│   │  asset-events │ request-events │ notification-events   │  │
-│   └─────────────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────────┘
-         │                    │                    │
-   Cloud Monitoring     Cloud Logging         Secret Manager
-   + Prometheus          (Audit trail)         (credentials)
 ```
 
 ---
@@ -40,15 +32,14 @@ Full-stack enterprise application for managing IT asset lifecycle.
 |-------|-----------|---------|
 | Frontend | Angular 18 + SCSS | SPA, reactive state, WebSocket client |
 | Backend | Java 21 + Spring Boot 3.3 | REST API, business logic, security |
-| Database | PostgreSQL 16 (Cloud SQL) | Persistent data, Flyway migrations |
-| Cache | Redis 7 (Memorystore) | Session, API response cache, rate limiting |
-| Messaging | Apache Kafka / GCP Pub/Sub | Async events: notifications, audit, EOL alerts |
+| Database | PostgreSQL 16 | Persistent data, Flyway migrations |
+| Cache | Redis (Upstash) | Session, API response cache, rate limiting |
 | Auth | Spring Security + JWT | RBAC: EMPLOYEE / IT_ADMIN / SUPER_ADMIN |
 | Real-time | WebSocket (STOMP) | Push notifications to browser |
-| Container | Docker + Artifact Registry | Image build and storage |
-| Deploy | GCP Cloud Run | Serverless containers, auto-scaling |
-| CI/CD | GitHub Actions | Test → Build → Push → Deploy |
-| Monitoring | Prometheus + Grafana | Metrics, dashboards, alerting |
+| Container | Docker | Image build and storage |
+| Deploy | Render (Backend) + Vercel (Frontend) | Cloud deployment, auto-scaling |
+| CI/CD | GitHub Actions | Test → Build → Deploy |
+| Monitoring | Prometheus + Grafana | Metrics, dashboards |
 
 ---
 
@@ -67,12 +58,11 @@ assetops/
 │   │   │   ├── request/        # Incoming request records
 │   │   │   └── response/       # Outgoing response records
 │   │   ├── enums/              # AssetStatus, Role, Priority, etc.
-│   │   ├── kafka/              # Producer & consumer
 │   │   ├── security/           # JWT service, filter, UserDetailsService
-│   │   ├── config/             # Security, Redis, Kafka, WebSocket config
+│   │   ├── config/             # Security, Redis, WebSocket config
 │   │   └── exception/          # Global handler, custom exceptions
 │   ├── src/main/resources/
-│   │   ├── application.yml     # All config (DB, Redis, Kafka, JWT, GCP)
+│   │   ├── application.yml     # All config (DB, Redis, JWT)
 │   │   └── db/migration/       # Flyway SQL migrations
 │   └── Dockerfile
 │
@@ -99,13 +89,9 @@ assetops/
 │   ├── nginx.conf              # SPA routing + security headers
 │   └── Dockerfile
 │
-├── infra/
-│   ├── k8s/                    # Kubernetes manifests (optional)
-│   └── terraform/              # GCP infrastructure as code
-│
+├── infra/                      # Infrastructure as code (Terraform/Prometheus)
 ├── docker-compose.yml          # Full local stack
 └── .github/workflows/ci-cd.yml # GitHub Actions pipeline
-
 ```
 
 ---
@@ -135,7 +121,6 @@ docker-compose logs -f backend
 | Frontend (Angular) | http://localhost:4200 |
 | Backend API | http://localhost:8080/api |
 | Swagger UI | http://localhost:8080/api/swagger-ui.html |
-| Kafka UI | http://localhost:8090 |
 | Grafana | http://localhost:3000 |
 | Prometheus | http://localhost:9090 |
 
@@ -176,18 +161,10 @@ npm start
 | System admin | ❌ | ❌ | ✅ |
 
 ### Request Workflow (State Machine)
-```
+```text
 PENDING → APPROVED → ALLOCATED → RETURNED
         ↘ REJECTED
 ```
-
-### Kafka Topics
-| Topic | Producer | Consumer | Purpose |
-|-------|----------|----------|---------|
-| `asset-events` | AssetService | Analytics | Asset CRUD, assignment changes |
-| `request-events` | RequestService | Analytics | Approval workflow transitions |
-| `notification-events` | All services | NotificationConsumer | Email + WebSocket push |
-| `audit-events` | All services | AuditConsumer | Compliance audit trail |
 
 ### Redis Caching Strategy
 | Cache | TTL | Contents |
@@ -200,51 +177,14 @@ PENDING → APPROVED → ALLOCATED → RETURNED
 
 ---
 
-## GCP Deployment
+## Deployment Configuration
 
-### Prerequisites
-```bash
-# Install Google Cloud CLI
-gcloud auth login
-gcloud config set project YOUR_PROJECT_ID
+This project is deployed across multiple cloud platforms for a cost-effective, scalable architecture.
 
-# Enable APIs
-gcloud services enable \
-  run.googleapis.com \
-  cloudsql.googleapis.com \
-  redis.googleapis.com \
-  secretmanager.googleapis.com \
-  artifactregistry.googleapis.com \
-  pubsub.googleapis.com
-```
-
-### Create infrastructure
-```bash
-# Artifact Registry
-gcloud artifacts repositories create assetops \
-  --repository-format=docker \
-  --location=asia-south1
-
-# Cloud SQL (PostgreSQL)
-gcloud sql instances create assetops-db \
-  --database-version=POSTGRES_16 \
-  --tier=db-g1-small \
-  --region=asia-south1
-
-# Redis (Memorystore)
-gcloud redis instances create assetops-cache \
-  --size=1 --region=asia-south1 --tier=basic
-
-# Store secrets
-echo -n "your-jwt-secret" | gcloud secrets create assetops-jwt-secret --data-file=-
-```
-
-### Deploy via GitHub Actions
-Push to `main` branch — the CI/CD pipeline handles the rest:
-1. Runs tests
-2. Builds Docker images
-3. Pushes to Artifact Registry
-4. Deploys to Cloud Run
+1. **Backend (Render):** Deployed as a Dockerized Web Service. Handles API requests, WebSockets, and Postgres connection.
+2. **Database (Render PostgreSQL):** Managed database service connected via private network to the backend.
+3. **Frontend (Vercel):** Angular SPA statically built and deployed to Vercel's global CDN.
+4. **Cache (Upstash Redis):** Serverless Redis instance for high-speed dashboard telemetry caching.
 
 ---
 
@@ -253,7 +193,7 @@ Push to `main` branch — the CI/CD pipeline handles the rest:
 Full interactive API docs at `/api/swagger-ui.html`
 
 ### Core endpoints
-```
+```text
 POST   /api/auth/login              Login
 POST   /api/auth/register           Register
 GET    /api/auth/me                 Current user
@@ -281,17 +221,15 @@ POST   /api/notifications/mark-all-read  Mark read
 
 ## Environment Variables
 
-### Backend
+### Backend (`application.yml` or `.env`)
 | Variable | Description | Example |
 |----------|-------------|---------|
-| `DB_URL` | PostgreSQL JDBC URL | `jdbc:postgresql://...` |
+| `SPRING_DB_URL` | PostgreSQL JDBC URL | `jdbc:postgresql://...` |
 | `DB_USER` | Database username | `assetops` |
 | `DB_PASSWORD` | Database password | secret |
-| `REDIS_HOST` | Redis hostname | `10.0.0.3` |
-| `REDIS_PASSWORD` | Redis auth | secret |
-| `KAFKA_BOOTSTRAP_SERVERS` | Kafka brokers | `kafka:9092` |
+| `SPRING_REDIS_URL` | Upstash Redis connection string | `redis://default:password@...` |
 | `JWT_SECRET` | 256-bit JWT signing key | 64-char string |
-| `CORS_ORIGINS` | Allowed origins | `https://app.assetops.com` |
+| `CORS_ORIGINS` | Allowed frontend origin | `https://assetops-frontend.vercel.app` |
 
 ---
 
