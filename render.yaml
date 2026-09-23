@@ -1,5 +1,5 @@
 databases:
-  - name: assetops-db3
+  - name: assetops-db4
     plan: free
 
 services:
@@ -17,23 +17,23 @@ services:
         value: prod
       - key: DB_HOST
         fromDatabase:
-          name: assetops-db3
+          name: assetops-db4
           property: host
       - key: DB_PORT
         fromDatabase:
-          name: assetops-db3
+          name: assetops-db4
           property: port
       - key: DB_NAME
         fromDatabase:
-          name: assetops-db3
+          name: assetops-db4
           property: database
       - key: DB_USER
         fromDatabase:
-          name: assetops-db3
+          name: assetops-db4
           property: user
       - key: DB_PASSWORD
         fromDatabase:
-          name: assetops-db3
+          name: assetops-db4
           property: password
       - key: SPRING_REDIS_URL
         sync: false
