@@ -21,14 +21,6 @@ interface ComparisonRow {
   excel: string;
 }
 
-interface TestCredential {
-  role: string;
-  email: string;
-  pass: string;
-  badge: string;
-  desc: string;
-}
-
 @Component({
   selector: 'app-landing',
   standalone: true,
@@ -40,44 +32,21 @@ export class LandingComponent implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
 
-  // Theme signal
   theme = signal<'dark' | 'light'>('dark');
-  copiedIndex = signal<number | null>(null);
   activeDemoTab = signal<'inventory' | 'requests' | 'lifecycle'>('inventory');
   openFaqIndex = signal<number | null>(0);
 
-  // Check authentication
   get isAuthenticated(): boolean {
     return this.auth.isAuthenticated();
   }
 
-  get userRole(): string | null {
-    return this.auth.currentUserSignal()?.role ?? null;
-  }
-
-  readonly testCredentials: TestCredential[] = [
-    {
-      role: 'Super Administrator',
-      email: 'admin@assetops.com',
-      pass: 'Admin@123',
-      badge: 'Full Platform Control',
-      desc: 'System governance, user roles, security audits, and financial reporting.'
-    },
-    {
-      role: 'IT Administrator',
-      email: 'arjun@assetops.com',
-      pass: 'Admin@123',
-      badge: 'Operations & Procurement',
-      desc: 'Asset lifecycle assignment, EOL replacement tracking, and hardware approvals.'
-    },
-    {
-      role: 'Employee / Staff',
-      email: 'priya@assetops.com',
-      pass: 'Admin@123',
-      badge: 'Self-Service Portal',
-      desc: 'Hardware requests, assigned device tracking, and instant return workflows.'
-    }
-  ];
+  readonly author = {
+    name: 'Harsh Parakh',
+    email: 'harshparakh.work@gmail.com',
+    github: 'https://github.com/harsh-parakh22',
+    linkedin: 'https://linkedin.com/in/harshparakh',
+    repo: 'https://github.com/harsh-parakh22/AssetOps'
+  };
 
   readonly techStack: TechItem[] = [
     {
@@ -85,152 +54,152 @@ export class LandingComponent implements OnInit {
       category: 'Backend Core & Concurrency',
       badge: 'Virtual Threads (Project Loom)',
       icon: '☕',
-      description: 'Enterprise REST API foundation built on Java 21 LTS with Spring Security and HikariCP connection pooling.',
+      description: 'REST API core built on Java 21 with Spring Security, Spring Data JPA, and HikariCP connection pooling.',
       whyChosen: [
-        'Virtual Threads unlock non-blocking high-throughput concurrency with minimal memory overhead',
-        'Strongly-typed business logic prevents runtime type mismatch and regression bugs',
-        'Spring Security method-level (@PreAuthorize) provides unbreakable RBAC enforcement',
-        'HikariCP delivers ultra-resilient database connection pooling with sub-millisecond acquisition'
+        'Virtual threads provide high throughput with lightweight concurrency on top of the JVM',
+        'Strong static typing and compile-time checks minimize regression risks across business workflows',
+        'Spring Security method-level annotations enforce role-based access control directly on API endpoints',
+        'HikariCP ensures fast, reliable database connection acquisition and pool management'
       ]
     },
     {
       name: 'PostgreSQL 16',
-      category: 'Relational Database & Integrity',
-      badge: 'ACID & Semi-Structured JSONB',
+      category: 'Relational Database',
+      badge: 'ACID Transactions & Flyway Migrations',
       icon: '🐘',
-      description: 'Primary relational datastore with Flyway schema migration pipelines for financial-grade data integrity.',
+      description: 'Primary relational database maintaining asset records, user assignments, approval histories, and audit logs.',
       whyChosen: [
-        'Strict ACID compliance ensures hardware allocations and financial depreciation never fall into corrupt states',
-        'Native JSONB columns allow extensible hardware specification schemas (RAM, CPU, serials) without schema lock',
-        'Version-controlled Flyway migrations provide automated, zero-downtime database upgrades',
-        'Optimized composite indexing guarantees rapid search across tens of thousands of serial numbers'
+        'Full ACID compliance prevents state corruption during asset transfers and allocations',
+        'Automated Flyway migrations ensure repeatable, version-controlled database schema changes',
+        'Foreign key constraints and indexed queries guarantee relational consistency across users and assets',
+        'Native UUID keys and temporal tracking maintain immutable history for every device record'
       ]
     },
     {
-      name: 'Redis 7 In-Memory Engine',
-      category: 'Sub-Millisecond Caching',
-      badge: '< 5ms Cache Response',
+      name: 'Redis 7 (Upstash)',
+      category: 'Distributed In-Memory Cache',
+      badge: 'Low-Latency Cache Layer',
       icon: '⚡',
-      description: 'High-speed in-memory cache layer for real-time KPI aggregations and cross-service session management.',
+      description: 'In-memory caching layer storing aggregated metrics, dashboard counters, and asset statistics.',
       whyChosen: [
-        'Caches expensive COUNT/GROUP BY dashboard aggregations, dropping KPI query times from ~450ms to < 4ms',
-        'Automatic cache eviction (@CacheEvict) keeps data strictly consistent when assets change status',
-        'Reduces PostgreSQL connection saturation by absorbing up to 85% of repetitive read volume',
-        'Enables distributed session resilience and instant cache invalidation'
+        'Caches compute-heavy dashboard statistics to reduce repetitive database queries',
+        'Spring Cache annotations handle automatic eviction whenever assets are updated or reassigned',
+        'Custom non-fatal error handler allows seamless fallback to the primary database if cache is unreachable',
+        'Decreases primary database load during peak operational reporting'
       ]
     },
     {
-      name: 'Angular 18 Enterprise SPA',
-      category: 'Frontend & Reactive UI',
-      badge: 'Signals & Modern Control Flow',
+      name: 'Angular 18',
+      category: 'Frontend Single-Page Architecture',
+      badge: 'Signals & Standalone Components',
       icon: '🅰️',
-      description: 'Single Page Application built with Angular 18 standalone components, reactive signals, and TypeScript.',
+      description: 'Single-page web client built with Angular 18 standalone components, reactive signals, and TypeScript.',
       whyChosen: [
-        'Fine-grained Signals reactivity provides zero-jank UI updates without heavy ChangeDetection cycles',
-        'Strict TypeScript compilation eliminates null-pointer errors across complex enterprise workflows',
-        'Route-level code splitting ensures initial bundle load is minimal and sub-second fast',
-        'Native SCSS design token architecture enables seamless Dark/Light theme switching'
+        'Fine-grained reactive signals provide immediate view updates without manual change-detection cycles',
+        'TypeScript interfaces enforce end-to-end data contracts matching backend DTO models',
+        'Lazy-loaded routing keeps initial bundle sizes compact for fast page loads',
+        'Unified CSS custom properties system powers instant dark and light mode switching'
       ]
     },
     {
-      name: 'WebSockets & STOMP Protocol',
-      category: 'Live Telemetry & Messaging',
-      badge: 'Bi-Directional Event Dispatching',
+      name: 'WebSocket & STOMP Protocol',
+      category: 'Real-Time Notification Delivery',
+      badge: 'Full-Duplex Communication',
       icon: '📡',
-      description: 'Full-duplex communication channel for live asset allocation requests, approval broadcasts, and real-time alerts.',
+      description: 'Bi-directional messaging channel delivering live notifications when requests are submitted or reviewed.',
       whyChosen: [
-        'Eliminates battery-draining and network-heavy HTTP polling loops',
-        'IT Administrators receive instant push notifications the exact millisecond an employee submits a hardware request',
-        'Live unread badge indicators update in real-time across open tabs without refreshing',
-        'Secure WebSocket connection verified via STOMP CONNECT frame JWT authentication'
+        'Eliminates repetitive HTTP polling routines from the browser client',
+        'Admins receive immediate visual alerts when a team member submits a hardware request',
+        'Unread notification counters update in real time without requiring a page refresh',
+        'Authenticated through JWT credentials validated at WebSocket connection handshake'
       ]
     },
     {
       name: 'Docker & Hardened Nginx 1.27',
-      category: 'Infrastructure & Edge Proxy',
-      badge: 'Multi-Stage Immutable Builds',
+      category: 'Containerization & Edge Gateway',
+      badge: 'Multi-Stage Build Architecture',
       icon: '🐳',
-      description: 'Production containerization pipeline with an Alpine Linux reverse proxy and enterprise security headers.',
+      description: 'Production container setup running a lightweight Nginx reverse proxy with security headers.',
       whyChosen: [
-        'Two-stage Docker builds produce ultra-lean, attack-surface-minimized production artifacts',
-        'Nginx serves compiled SPA assets with immutable 1-year caching and automated Brotli/Gzip compression',
-        'Configured with strict security headers (CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy)',
-        'Built-in reverse proxy error interception replaces raw HTML crashes with graceful JSON responses'
+        'Multi-stage Docker builds produce lean, reproducible deployment images',
+        'Nginx serves static single-page assets efficiently with asset caching and compression',
+        'Security headers protect against clickjacking and MIME-type sniffing',
+        'Graceful reverse-proxy error handling returns clean JSON responses during service maintenance'
       ]
     }
   ];
 
   readonly comparisonData: ComparisonRow[] = [
     {
-      capability: 'Real-Time Telemetry & Alerts',
+      capability: 'Real-Time Alert Dispatch',
       assetops: 'Native STOMP WebSockets',
-      assetopsNote: 'Zero-latency push notifications for requests and approvals',
-      servicenow: 'Slow Polling / Costly Addon',
-      snipeit: 'Manual Page Refresh',
-      excel: 'Never (Static)'
+      assetopsNote: 'Instant notification delivery on request events without polling',
+      servicenow: 'Complex polling / specialized modules',
+      snipeit: 'Manual browser refresh required',
+      excel: 'Not available'
     },
     {
-      capability: 'In-Memory Query Performance',
-      assetops: 'Redis 7 L2 Caching (< 5ms)',
-      assetopsNote: 'Instantaneous KPI aggregation and analytics',
-      servicenow: 'Complex multi-second queries',
-      snipeit: 'Direct SQL on every click',
-      excel: 'Laggy formula recalculations'
+      capability: 'Analytical Query Caching',
+      assetops: 'Redis In-Memory Caching',
+      assetopsNote: 'Pre-computed dashboard summaries with automated eviction on writes',
+      servicenow: 'Enterprise database reporting',
+      snipeit: 'Direct relational database queries',
+      excel: 'Manual workbook recalculation'
     },
     {
-      capability: 'Automated Lifecycle & EOL Forecasting',
-      assetops: 'Built-in Predictive Cron Engine',
-      assetopsNote: 'Automated warnings 60 days before warranty/EOL expiration',
-      servicenow: 'Requires Enterprise SAM license',
-      snipeit: 'Basic expiry dates only',
-      excel: 'Broken manual date macros'
+      capability: 'Automated Lifecycle Tracking',
+      assetops: 'Scheduled EOL Evaluation',
+      assetopsNote: 'Scheduled jobs identify approaching warranty and replacement dates',
+      servicenow: 'High-tier license requirement',
+      snipeit: 'Static expiration fields only',
+      excel: 'Manual formula upkeep'
     },
     {
-      capability: 'User Experience & Theming',
-      assetops: 'Sleek Glassmorphism Dark/Light',
-      assetopsNote: 'Modern Big-Tech aesthetic tailored for speed and elegance',
-      servicenow: 'Clunky 2012 enterprise portal',
-      snipeit: 'Dated Bootstrap 3/4 layout',
-      excel: 'Cluttered spreadsheet rows'
+      capability: 'Interface & Theming',
+      assetops: 'Dark & Light Mode Included',
+      assetopsNote: 'Modern responsive interface designed for fast navigation',
+      servicenow: 'Complex enterprise console',
+      snipeit: 'Traditional administrative dashboard',
+      excel: 'Dense spreadsheet layout'
     },
     {
-      capability: 'Role-Based Access Control (RBAC)',
-      assetops: 'Granular Method-Level @PreAuthorize',
-      assetopsNote: 'Super Admin, IT Admin, Employee role boundaries',
-      servicenow: 'Convoluted ACL matrix',
-      snipeit: 'Basic permission flags',
-      excel: 'Unprotected / Shared Passwords'
+      capability: 'Role-Based Access Control',
+      assetops: 'Method-Level API Enforcement',
+      assetopsNote: 'Distinct permissions for Super Admin, IT Admin, and Employee roles',
+      servicenow: 'Multi-layered permission matrices',
+      snipeit: 'Standard permission groups',
+      excel: 'Workbook passwords only'
     },
     {
-      capability: 'Deployment & Cloud Portability',
-      assetops: '100% Docker & Render Ready',
-      assetopsNote: 'Zero vendor lock-in; deploy on AWS, GCP, Azure, or On-Prem',
-      servicenow: 'Heavy proprietary cloud lock-in',
-      snipeit: 'Manual PHP/Apache server maintenance',
-      excel: 'File version drift in emails'
+      capability: 'Deployment & Portability',
+      assetops: 'Standard Containerized Stack',
+      assetopsNote: 'Runs anywhere Docker is supported with standard PostgreSQL and Redis',
+      servicenow: 'Proprietary platform hosting',
+      snipeit: 'Traditional server setup',
+      excel: 'Local files and shared drives'
     }
   ];
 
   readonly faqs = [
     {
-      q: 'How does AssetOps differ from legacy IT service software like ServiceNow?',
-      a: 'ServiceNow is an enormous, slow, and expensive ticketing monolith with high implementation costs. AssetOps is designed specifically for modern high-growth companies that need lightning-fast IT asset lifecycle management with sub-second page loads, real-time WebSockets, predictive EOL tracking, and zero enterprise bloat.'
+      q: 'How does AssetOps structure role-based permissions?',
+      a: 'AssetOps defines three distinct roles: Super Administrator (platform configuration and user administration), IT Administrator (inventory lifecycle, equipment allocation, and request processing), and Employee (submitting hardware requests and reviewing assigned assets). Every mutation is guarded at both the routing layer and backend API methods.'
     },
     {
-      q: 'Can we self-host AssetOps on our own private Kubernetes or cloud VPC?',
-      a: 'Yes! AssetOps is built on 100% cloud-native Docker containers with strict separation between the Spring Boot backend, PostgreSQL database, Redis cluster, and Nginx SPA frontend. You can deploy to AWS ECS/EKS, Google Cloud Run, Azure Container Apps, or Render with zero vendor lock-in.'
+      q: 'Can AssetOps be deployed on standard cloud infrastructure?',
+      a: 'Yes. The backend runs as a containerized Spring Boot service, the frontend runs through an Nginx container, and data persists in standard PostgreSQL and Redis instances. This architecture runs smoothly across Render, AWS, Google Cloud, Azure, or on-premises servers.'
     },
     {
-      q: 'How does the End-of-Life (EOL) depreciation tracking work?',
-      a: 'AssetOps computes asset depreciation and replacement schedules based on initial acquisition cost, purchase date, warranty term, and category-specific depreciation schedules. An automated background scheduler triggers warning alerts 60 days before hardware end-of-life, preventing unplanned team outages.'
+      q: 'How does the lifecycle tracking workflow function?',
+      a: 'AssetOps stores purchase records, warranty periods, and estimated operational lifespans for all inventory items. A scheduled background task routinely reviews these records to flag equipment approaching end-of-life, giving IT teams advance notice to plan replacements.'
     },
     {
-      q: 'Is there Role-Based Access Control (RBAC) built into the system?',
-      a: 'Yes. AssetOps enforces three distinct security roles: Super Admin (system management, security audit logs, role changes), IT Administrator (inventory creation, hardware assignment, request approvals), and Employee (self-service request submission, assigned asset tracking).'
+      q: 'What occurs if the Redis cache becomes temporarily unavailable?',
+      a: 'The Spring Boot caching architecture implements a non-fatal error handler. If Redis is unreachable, read requests transparently fall back to querying the PostgreSQL database directly, ensuring uninterrupted system availability.'
     },
     {
-      q: 'How can I test the system right now?',
-      a: 'You can test immediately! Click on any of the test credentials in the credentials drawer to copy the login details, and click "Launch Live Console" to test Super Admin, IT Admin, or Employee workflows.'
+      q: 'How do real-time WebSocket notifications operate?',
+      a: 'The frontend establishes a STOMP over WebSocket connection to the backend. When a hardware request is created or updated, the server publishes an event to dedicated topic queues, updating the notification badge and message history immediately.'
     }
   ];
 
@@ -252,18 +221,12 @@ export class LandingComponent implements OnInit {
     document.documentElement.setAttribute('data-theme', next);
   }
 
-  launchConsole(): void {
+  openConsole(): void {
     if (this.isAuthenticated) {
       this.router.navigate([this.auth.isAdmin() ? '/dashboard' : '/requests']);
     } else {
       this.router.navigate(['/auth/login']);
     }
-  }
-
-  copyCredential(cred: TestCredential, index: number): void {
-    navigator.clipboard.writeText(`${cred.email}`);
-    this.copiedIndex.set(index);
-    setTimeout(() => this.copiedIndex.set(null), 2500);
   }
 
   toggleFaq(index: number): void {
