@@ -59,7 +59,13 @@ public class AssetRequestServiceImpl implements AssetRequestService {
 
     @Override
     public AssetRequestResponse findById(UUID id) {
-        return AssetRequestResponse.from(getOrThrow(id));
+        AssetRequest req = getOrThrow(id);
+        User user = getCurrentUser();
+        if (user.getRole() == com.assetops.enums.Role.EMPLOYEE &&
+            (req.getRequestedBy() == null || !req.getRequestedBy().getId().equals(user.getId()))) {
+            throw new BusinessException("Access denied: You cannot view other employees' requests");
+        }
+        return AssetRequestResponse.from(req);
     }
 
     @Override

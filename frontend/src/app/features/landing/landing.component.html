@@ -1,0 +1,651 @@
+<div class="landing-page" [attr.data-theme]="theme()">
+  <!-- Sticky Top Navigation -->
+  <header class="landing-nav">
+    <div class="nav-container">
+      <div class="brand" (click)="scrollToSection('hero')">
+        <div class="brand-mark">AO</div>
+        <div class="brand-text">
+          <span class="brand-title">AssetOps</span>
+          <span class="brand-badge">ENTERPRISE ITAM</span>
+        </div>
+      </div>
+
+      <nav class="nav-links">
+        <a (click)="scrollToSection('features')">Features</a>
+        <a (click)="scrollToSection('tech-stack')">Tech Stack & Why</a>
+        <a (click)="scrollToSection('comparison')">Market Comparison</a>
+        <a (click)="scrollToSection('security')">Security & Guard</a>
+        <a (click)="scrollToSection('credentials')">Test Logins</a>
+        <a (click)="scrollToSection('faq')">FAQ</a>
+      </nav>
+
+      <div class="nav-actions">
+        <!-- Theme Switcher -->
+        <button class="theme-toggle" (click)="toggleTheme()" [title]="'Switch to ' + (theme() === 'dark' ? 'Light' : 'Dark') + ' Mode'">
+          <span *ngIf="theme() === 'dark'" class="theme-icon">☀️ Light</span>
+          <span *ngIf="theme() === 'light'" class="theme-icon">🌙 Dark</span>
+        </button>
+
+        <ng-container *ngIf="isAuthenticated; else guestActions">
+          <button class="btn btn-primary glow-btn" (click)="launchConsole()">
+            <span>Open Console</span>
+            <span class="arrow">→</span>
+          </button>
+        </ng-container>
+
+        <ng-template #guestActions>
+          <a routerLink="/auth/login" class="btn btn-ghost">Sign In</a>
+          <button class="btn btn-primary glow-btn" (click)="launchConsole()">
+            <span>Launch Live Demo</span>
+            <span class="arrow">→</span>
+          </button>
+        </ng-template>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section id="hero" class="hero-section">
+      <div class="hero-bg-glow"></div>
+      <div class="container hero-content">
+        <div class="hero-badge">
+          <span class="badge-dot"></span>
+          <span>Next-Gen Enterprise ITAM 2.0 • Real-Time WebSockets • SOC 2 Ready</span>
+        </div>
+
+        <h1 class="hero-title">
+          The Intelligent Infrastructure For <br/>
+          <span class="gradient-text">Enterprise IT Asset Operations</span>
+        </h1>
+
+        <p class="hero-sub">
+          Replace fragmented spreadsheets and bloated legacy ticketing with real-time hardware telemetry, 
+          automated procurement approvals, and predictive end-of-life intelligence — engineered on Java 21, Redis 7, and PostgreSQL.
+        </p>
+
+        <div class="hero-cta-group">
+          <button class="btn btn-primary btn-lg glow-btn" (click)="launchConsole()">
+            <span>Explore Live Demo Console</span>
+            <span class="arrow">→</span>
+          </button>
+          <button class="btn btn-secondary btn-lg" (click)="scrollToSection('comparison')">
+            <span>Why We're Best In Market</span>
+            <span class="btn-tag">Matrix</span>
+          </button>
+        </div>
+
+        <!-- Quick Test Credentials Highlight Bar -->
+        <div id="credentials" class="creds-bar">
+          <div class="creds-header">
+            <span class="creds-title">⚡ Instant Evaluation Credentials:</span>
+            <span class="creds-subtitle">Click to copy and test full platform capabilities instantly</span>
+          </div>
+
+          <div class="creds-grid">
+            <div 
+              *ngFor="let cred of testCredentials; let i = index" 
+              class="cred-card"
+              (click)="copyCredential(cred, i)"
+              [class.copied]="copiedIndex() === i"
+            >
+              <div class="cred-role-row">
+                <span class="cred-role">{{ cred.role }}</span>
+                <span class="cred-pill">{{ cred.badge }}</span>
+              </div>
+              <div class="cred-code-block">
+                <code>{{ cred.email }}</code>
+                <span class="copy-badge">{{ copiedIndex() === i ? '✓ Copied' : 'Copy' }}</span>
+              </div>
+              <div class="cred-pass-hint">Password: <strong>{{ cred.pass }}</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Live Dashboard Bento Preview -->
+        <div class="hero-preview-frame">
+          <div class="preview-glass-header">
+            <div class="traffic-lights">
+              <span class="light red"></span>
+              <span class="light yellow"></span>
+              <span class="light green"></span>
+            </div>
+            <div class="preview-address-bar">
+              <span class="lock-icon">🔒</span>
+              <span>https://console.assetops.enterprise/live-telemetry</span>
+            </div>
+            <div class="telemetry-pill">
+              <span class="live-dot"></span>
+              <span>Redis & STOMP Connected (<span class="mono-num">2ms</span>)</span>
+            </div>
+          </div>
+
+          <!-- Preview KPI Strip -->
+          <div class="preview-kpis">
+            <div class="pkpi-card">
+              <span class="pkpi-label">Active Hardware Valuation</span>
+              <span class="pkpi-val">$2,480,500</span>
+              <span class="pkpi-delta positive">↑ 12.4% vs Q2</span>
+            </div>
+            <div class="pkpi-card">
+              <span class="pkpi-label">Deployed Enterprise Assets</span>
+              <span class="pkpi-val">1,248</span>
+              <span class="pkpi-delta neutral">98.2% Active</span>
+            </div>
+            <div class="pkpi-card">
+              <span class="pkpi-label">Approaching End-of-Life</span>
+              <span class="pkpi-val warning-val">14 Devices</span>
+              <span class="pkpi-delta warning">Replacement Scheduled</span>
+            </div>
+            <div class="pkpi-card">
+              <span class="pkpi-label">API Guard Status</span>
+              <span class="pkpi-val healthy-val">100% Protected</span>
+              <span class="pkpi-delta positive">RBAC & IDOR Validated</span>
+            </div>
+          </div>
+
+          <!-- Interactive Tabs Preview -->
+          <div class="preview-tabs-bar">
+            <button 
+              class="preview-tab" 
+              [class.active]="activeDemoTab() === 'inventory'" 
+              (click)="activeDemoTab.set('inventory')">
+              💻 Real-Time Inventory (1,248)
+            </button>
+            <button 
+              class="preview-tab" 
+              [class.active]="activeDemoTab() === 'requests'" 
+              (click)="activeDemoTab.set('requests')">
+              ⚡ Live Request Queue (3 Pending)
+            </button>
+            <button 
+              class="preview-tab" 
+              [class.active]="activeDemoTab() === 'lifecycle'" 
+              (click)="activeDemoTab.set('lifecycle')">
+              🔄 Lifecycle & EOL Engine
+            </button>
+          </div>
+
+          <!-- Tab Content Mock -->
+          <div class="preview-table-wrap">
+            <ng-container [ngSwitch]="activeDemoTab()">
+              <!-- Inventory Tab -->
+              <table *ngSwitchCase="'inventory'" class="preview-table">
+                <thead>
+                  <tr>
+                    <th>Asset Tag</th>
+                    <th>Model / Spec</th>
+                    <th>Category</th>
+                    <th>Assigned User</th>
+                    <th>Status</th>
+                    <th>Depreciation</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code class="asset-tag">AO-LTP-9482</code></td>
+                    <td><strong>MacBook Pro 16" M3 Max</strong> (64GB / 2TB)</td>
+                    <td><span class="cat-pill">LAPTOP</span></td>
+                    <td>Priya Sharma (Engineering)</td>
+                    <td><span class="status-pill active">ASSIGNED</span></td>
+                    <td><span class="prog-bar"><span class="fill" style="width: 25%"></span></span> 25% EOL</td>
+                  </tr>
+                  <tr>
+                    <td><code class="asset-tag">AO-SVR-1033</code></td>
+                    <td><strong>Dell PowerEdge R750xs</strong> (128GB ECC)</td>
+                    <td><span class="cat-pill server">SERVER</span></td>
+                    <td>Infrastructure Core Cluster</td>
+                    <td><span class="status-pill active">ASSIGNED</span></td>
+                    <td><span class="prog-bar"><span class="fill" style="width: 40%"></span></span> 40% EOL</td>
+                  </tr>
+                  <tr>
+                    <td><code class="asset-tag">AO-DIS-8831</code></td>
+                    <td><strong>LG UltraFine 32" OLED 4K Pro</strong></td>
+                    <td><span class="cat-pill">MONITOR</span></td>
+                    <td>Unallocated Hardware Pool</td>
+                    <td><span class="status-pill available">AVAILABLE</span></td>
+                    <td><span class="prog-bar"><span class="fill" style="width: 10%"></span></span> 10% EOL</td>
+                  </tr>
+                  <tr>
+                    <td><code class="asset-tag">AO-LTP-7104</code></td>
+                    <td><strong>ThinkPad X1 Carbon Gen 11</strong></td>
+                    <td><span class="cat-pill">LAPTOP</span></td>
+                    <td>Arjun Kumar (IT Operations)</td>
+                    <td><span class="status-pill warning">NEAR_EOL</span></td>
+                    <td><span class="prog-bar"><span class="fill warning" style="width: 88%"></span></span> 88% EOL</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <!-- Requests Tab -->
+              <table *ngSwitchCase="'requests'" class="preview-table">
+                <thead>
+                  <tr>
+                    <th>Request #</th>
+                    <th>Requested Item</th>
+                    <th>Requestor</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code class="asset-tag">REQ-2026-104</code></td>
+                    <td>MacBook Pro 16" M3 for Senior AI Engineer</td>
+                    <td>Priya Sharma</td>
+                    <td><span class="priority-pill high">HIGH</span></td>
+                    <td><span class="status-pill pending">PENDING</span></td>
+                    <td><button class="action-btn" (click)="launchConsole()">Approve & Allocate →</button></td>
+                  </tr>
+                  <tr>
+                    <td><code class="asset-tag">REQ-2026-103</code></td>
+                    <td>Ergonomic Standing Desk Dual Monitor Mount</td>
+                    <td>Marcus Vance</td>
+                    <td><span class="priority-pill medium">MEDIUM</span></td>
+                    <td><span class="status-pill active">APPROVED</span></td>
+                    <td><button class="action-btn outline" (click)="launchConsole()">Dispatched</button></td>
+                  </tr>
+                  <tr>
+                    <td><code class="asset-tag">REQ-2026-102</code></td>
+                    <td>Hardware Security Key (FIDO2 / YubiKey 5C)</td>
+                    <td>DevOps Security Team</td>
+                    <td><span class="priority-pill critical">CRITICAL</span></td>
+                    <td><span class="status-pill available">ALLOCATED</span></td>
+                    <td><button class="action-btn outline" (click)="launchConsole()">View Audit</button></td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <!-- Lifecycle Tab -->
+              <table *ngSwitchCase="'lifecycle'" class="preview-table">
+                <thead>
+                  <tr>
+                    <th>Asset Tag</th>
+                    <th>Hardware</th>
+                    <th>Purchase Date</th>
+                    <th>Warranty Expiry</th>
+                    <th>Replacement Action</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code class="asset-tag">AO-LTP-7104</code></td>
+                    <td>ThinkPad X1 Carbon Gen 11</td>
+                    <td>Nov 2023</td>
+                    <td><span class="badge-red">Expires in 18 Days</span></td>
+                    <td>Auto-Flagged for Procurement Order</td>
+                    <td><button class="action-btn" (click)="launchConsole()">Order Replacement</button></td>
+                  </tr>
+                  <tr>
+                    <td><code class="asset-tag">AO-NET-4002</code></td>
+                    <td>Cisco Catalyst 9300 48-Port Switch</td>
+                    <td>Jan 2022</td>
+                    <td><span class="badge-amber">Expires in 42 Days</span></td>
+                    <td>Firmware End-of-Support Notice</td>
+                    <td><button class="action-btn outline" (click)="launchConsole()">Schedule Audit</button></td>
+                  </tr>
+                  <tr>
+                    <td><code class="asset-tag">AO-MBL-2991</code></td>
+                    <td>iPhone 14 Pro Fleet Test Device</td>
+                    <td>Sep 2022</td>
+                    <td><span class="badge-red">Expired (EOL)</span></td>
+                    <td>Recycle & Deprecate Protocol</td>
+                    <td><button class="action-btn outline" (click)="launchConsole()">Retire Device</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Metrics Strip -->
+    <section class="metrics-section">
+      <div class="container">
+        <div class="metrics-grid">
+          <div class="metric-item">
+            <span class="metric-number">&lt; 5ms</span>
+            <span class="metric-label">Dashboard Cache Latency</span>
+            <span class="metric-sub">Powered by native Redis 7 in-memory layer</span>
+          </div>
+          <div class="metric-divider"></div>
+          <div class="metric-item">
+            <span class="metric-number">100%</span>
+            <span class="metric-label">Audit Trail Coverage</span>
+            <span class="metric-sub">SOX & SOC 2 Type II compliance ready</span>
+          </div>
+          <div class="metric-divider"></div>
+          <div class="metric-item">
+            <span class="metric-number">4.8x</span>
+            <span class="metric-label">Faster Procurement Cycles</span>
+            <span class="metric-sub">One-click request-to-allocation dispatch</span>
+          </div>
+          <div class="metric-divider"></div>
+          <div class="metric-item">
+            <span class="metric-number">Zero</span>
+            <span class="metric-label">Unbudgeted EOL Outages</span>
+            <span class="metric-sub">60-day predictive depreciation cron alerts</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Top Tech Stack Used & Why Each Section -->
+    <section id="tech-stack" class="tech-section">
+      <div class="container">
+        <div class="section-badge">ARCHITECTURE & ENGINEERING</div>
+        <h2 class="section-title">Engineered With World-Class Enterprise Tech</h2>
+        <p class="section-sub">
+          We chose an enterprise-grade, battle-tested modern tech stack designed for high concurrency, zero data corruption, and sub-millisecond responsiveness.
+        </p>
+
+        <div class="tech-grid">
+          <div *ngFor="let item of techStack" class="tech-card">
+            <div class="tech-card-header">
+              <div class="tech-icon-wrap">
+                <span class="tech-emoji">{{ item.icon }}</span>
+              </div>
+              <div class="tech-title-wrap">
+                <h3 class="tech-name">{{ item.name }}</h3>
+                <span class="tech-cat">{{ item.category }}</span>
+              </div>
+            </div>
+
+            <div class="tech-badge-row">
+              <span class="tech-highlight-badge">{{ item.badge }}</span>
+            </div>
+
+            <p class="tech-desc">{{ item.description }}</p>
+
+            <div class="tech-reasons">
+              <span class="reasons-label">Why it was chosen:</span>
+              <ul class="reasons-list">
+                <li *ngFor="let reason of item.whyChosen">
+                  <span class="check-icon">✓</span>
+                  <span>{{ reason }}</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Why AssetOps Is The Best In The Market (Comparison Section) -->
+    <section id="comparison" class="comparison-section">
+      <div class="container">
+        <div class="section-badge winner-badge">COMPETITIVE MATRIX</div>
+        <h2 class="section-title">How AssetOps Outperforms The Market</h2>
+        <p class="section-sub">
+          Legacy IT service monoliths are slow, expensive, and clunky. See how AssetOps delivers superior performance, agility, and modern user experience.
+        </p>
+
+        <div class="comparison-table-wrap">
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th class="col-feature">Key Capability</th>
+                <th class="col-assetops highlight-header">
+                  <div class="assetops-header-badge">
+                    <span>👑 AssetOps (Next-Gen)</span>
+                  </div>
+                </th>
+                <th class="col-other">ServiceNow</th>
+                <th class="col-other">Snipe-IT</th>
+                <th class="col-other">Excel Spreadsheets</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of comparisonData">
+                <td class="col-feature">
+                  <strong>{{ row.capability }}</strong>
+                </td>
+                <td class="col-assetops highlight-cell">
+                  <div class="cell-primary">
+                    <span class="badge-success">✓ {{ row.assetops }}</span>
+                  </div>
+                  <div class="cell-note">{{ row.assetopsNote }}</div>
+                </td>
+                <td class="col-other">
+                  <span class="badge-warn">{{ row.servicenow }}</span>
+                </td>
+                <td class="col-other">
+                  <span class="badge-neutral">{{ row.snipeit }}</span>
+                </td>
+                <td class="col-other">
+                  <span class="badge-danger">❌ {{ row.excel }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Platform Capabilities (Bento Grid) -->
+    <section id="features" class="features-section">
+      <div class="container">
+        <div class="section-badge">CORE CAPABILITIES</div>
+        <h2 class="section-title">Everything You Need To Command IT Inventory</h2>
+        <p class="section-sub">
+          From acquisition and employee assignment to maintenance, depreciation, and retirement.
+        </p>
+
+        <div class="bento-grid">
+          <!-- Bento 1 -->
+          <div class="bento-card bento-span-2">
+            <div class="bento-header">
+              <div class="bento-icon">⚡</div>
+              <div>
+                <h3 class="bento-title">Real-Time WebSocket Allocation & STOMP Dispatch</h3>
+                <p class="bento-desc">Zero polling overhead. When an employee requests a device, administrators receive instantaneous desktop alerts and badge increments.</p>
+              </div>
+            </div>
+            <div class="bento-visual ws-visual">
+              <div class="ws-bubble user">"Need replacement 32-inch 4K Monitor for workstation"</div>
+              <div class="ws-pulse-line">⚡ Instant WebSocket Broadcast &lt; 2ms</div>
+              <div class="ws-bubble admin">"Approved &amp; Asset Allocated: AO-DIS-8831"</div>
+            </div>
+          </div>
+
+          <!-- Bento 2 -->
+          <div class="bento-card">
+            <div class="bento-icon">🔄</div>
+            <h3 class="bento-title">Predictive EOL & Depreciation Tracker</h3>
+            <p class="bento-desc">Automated cron intelligence scans warranties daily, alerting you 60 days before retirement to budget replacements before devices fail.</p>
+            <div class="bento-pill-list">
+              <span class="bpill">Automated Cron</span>
+              <span class="bpill">60-Day Warning</span>
+              <span class="bpill">Financial Scrap Calc</span>
+            </div>
+          </div>
+
+          <!-- Bento 3 -->
+          <div class="bento-card">
+            <div class="bento-icon">🔒</div>
+            <h3 class="bento-title">Granular Role-Based Access Control (RBAC)</h3>
+            <p class="bento-desc">Strict security boundaries at the API layer. Super Admins govern access, IT Admins dispatch hardware, and Employees use a self-service portal.</p>
+            <div class="bento-pill-list">
+              <span class="bpill">SUPER_ADMIN</span>
+              <span class="bpill">IT_ADMIN</span>
+              <span class="bpill">EMPLOYEE</span>
+            </div>
+          </div>
+
+          <!-- Bento 4 -->
+          <div class="bento-card bento-span-2">
+            <div class="bento-header">
+              <div class="bento-icon">📊</div>
+              <div>
+                <h3 class="bento-title">Executive Analytics & One-Click PDF/CSV Export</h3>
+                <p class="bento-desc">Generate board-ready inventory valuations, status distributions, category share percentages, and audit logs on demand.</p>
+              </div>
+            </div>
+            <div class="bento-visual stats-visual">
+              <div class="stat-bar-group">
+                <div class="sbar-label">Laptops (45%)</div>
+                <div class="sbar-track"><div class="sbar-fill" style="width: 45%"></div></div>
+              </div>
+              <div class="stat-bar-group">
+                <div class="sbar-label">Monitors (28%)</div>
+                <div class="sbar-track"><div class="sbar-fill" style="width: 28%"></div></div>
+              </div>
+              <div class="stat-bar-group">
+                <div class="sbar-label">Servers (18%)</div>
+                <div class="sbar-track"><div class="sbar-fill" style="width: 18%"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Security & Compliance Section -->
+    <section id="security" class="security-section">
+      <div class="container">
+        <div class="section-badge security-badge">SECURITY & API GUARD</div>
+        <h2 class="section-title">Enterprise-Grade Security Architecture</h2>
+        <p class="section-sub">
+          Engineered with zero trust principles, strict API guards, and defensive hardening at every layer.
+        </p>
+
+        <div class="security-grid">
+          <div class="sec-card">
+            <div class="sec-icon">🛡️</div>
+            <h3 class="sec-title">Method-Level API Authorization</h3>
+            <p class="sec-desc">Every mutation endpoint is guarded with Spring Security <code>&#64;PreAuthorize</code> annotations. Unauthorized elevation attempts are blocked with 403 Forbidden.</p>
+          </div>
+
+          <div class="sec-card">
+            <div class="sec-icon">🔑</div>
+            <h3 class="sec-title">Stateless JWT & BCrypt Encryption</h3>
+            <p class="sec-desc">Tokens are signed with HMAC-SHA256 and verified on every request. Passwords use BCrypt with 10 salt rounds for brute-force resistance.</p>
+          </div>
+
+          <div class="sec-card">
+            <div class="sec-icon">🛑</div>
+            <h3 class="sec-title">IDOR & Ownership Verification</h3>
+            <p class="sec-desc">Employees are strictly restricted to their own submitted asset requests and assigned devices. Direct object references are checked against current session claims.</p>
+          </div>
+
+          <div class="sec-card">
+            <div class="sec-icon">🌐</div>
+            <h3 class="sec-title">Hardened Edge Reverse Proxy</h3>
+            <p class="sec-desc">Nginx applies X-Frame-Options (Clickjacking defense), X-Content-Type-Options nosniff, X-XSS-Protection, and strict CORS domain isolation.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="faq-section">
+      <div class="container">
+        <div class="section-badge">FREQUENTLY ASKED QUESTIONS</div>
+        <h2 class="section-title">Answers For Engineering &amp; IT Leaders</h2>
+        <p class="section-sub">Everything you need to know about evaluating and adopting AssetOps.</p>
+
+        <div class="faq-accordion">
+          <div 
+            *ngFor="let item of faqs; let i = index" 
+            class="faq-item"
+            [class.open]="openFaqIndex() === i"
+            (click)="toggleFaq(i)"
+          >
+            <div class="faq-question">
+              <span>{{ item.q }}</span>
+              <span class="faq-toggle-icon">{{ openFaqIndex() === i ? '−' : '+' }}</span>
+            </div>
+            <div *ngIf="openFaqIndex() === i" class="faq-answer">
+              <p>{{ item.a }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Final CTA Banner -->
+    <section class="cta-section">
+      <div class="container">
+        <div class="cta-card">
+          <div class="cta-glow"></div>
+          <h2 class="cta-title">Modernize Your IT Asset Operations Today</h2>
+          <p class="cta-sub">
+            Experience the speed, reliability, and precision of a next-generation IT asset management platform.
+          </p>
+          <div class="cta-btn-row">
+            <button class="btn btn-primary btn-lg glow-btn" (click)="launchConsole()">
+              <span>Launch Live Demo Console</span>
+              <span class="arrow">→</span>
+            </button>
+            <a routerLink="/auth/login" class="btn btn-secondary btn-lg">
+              <span>Sign In To Existing Account</span>
+            </a>
+          </div>
+          <div class="cta-badges">
+            <span>✓ No Credit Card Required</span>
+            <span>✓ Pre-Seeded Sample Data</span>
+            <span>✓ Instant Live Telemetry</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modern Big Tech Footer -->
+  <footer class="landing-footer">
+    <div class="container footer-content">
+      <div class="footer-left">
+        <div class="brand">
+          <div class="brand-mark">AO</div>
+          <div class="brand-text">
+            <span class="brand-title">AssetOps</span>
+            <span class="brand-tag">v2.4 Enterprise</span>
+          </div>
+        </div>
+        <p class="footer-desc">
+          Next-generation enterprise IT asset operations, lifecycle intelligence, and real-time hardware telemetry.
+        </p>
+        <div class="status-indicator">
+          <span class="status-dot"></span>
+          <span>All Systems Operational (99.99% Uptime)</span>
+        </div>
+      </div>
+
+      <div class="footer-links-group">
+        <div class="footer-col">
+          <h4>Platform</h4>
+          <a (click)="scrollToSection('features')">Features</a>
+          <a (click)="scrollToSection('tech-stack')">Architecture</a>
+          <a (click)="scrollToSection('comparison')">Market Comparison</a>
+          <a (click)="scrollToSection('security')">Security Guards</a>
+        </div>
+        <div class="footer-col">
+          <h4>Demo Roles</h4>
+          <a (click)="scrollToSection('credentials')">Super Admin</a>
+          <a (click)="scrollToSection('credentials')">IT Administrator</a>
+          <a (click)="scrollToSection('credentials')">Employee Portal</a>
+          <a routerLink="/auth/login">Console Sign In</a>
+        </div>
+        <div class="footer-col">
+          <h4>Compliance</h4>
+          <a>SOC 2 Type II</a>
+          <a>SOX Audit Trail</a>
+          <a>ISO 27001 Alignment</a>
+          <a>GDPR Privacy</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="container bottom-wrap">
+        <p>© 2026 AssetOps Inc. Engineered for high-velocity enterprise IT operations.</p>
+        <div class="theme-pill" (click)="toggleTheme()">
+          <span>Theme: <strong>{{ theme() | uppercase }}</strong> (Click to switch)</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>

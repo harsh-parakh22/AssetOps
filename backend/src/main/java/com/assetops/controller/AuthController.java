@@ -62,7 +62,7 @@ public class AuthController {
             .department(req.department())
             .jobTitle(req.jobTitle())
             .phoneNumber(req.phoneNumber())
-            .role(req.role() != null ? req.role() : Role.EMPLOYEE)
+            .role(Role.EMPLOYEE)
             .build();
         user = userRepository.save(user);
 
@@ -76,6 +76,9 @@ public class AuthController {
     @GetMapping("/me")
     public ResponseEntity<com.assetops.dto.response.UserResponse> me(
         org.springframework.security.core.Authentication auth) {
+        if (auth == null || !auth.isAuthenticated()) {
+            throw new BusinessException("Unauthorized - missing or invalid token");
+        }
         User user = userRepository.findByEmail(auth.getName())
             .orElseThrow(() -> new BusinessException("User not found"));
         return ResponseEntity.ok(com.assetops.dto.response.UserResponse.from(user));
