@@ -44,7 +44,7 @@ export class LandingComponent implements OnInit {
     name: 'Harsh Parakh',
     email: 'harshparakh.work@gmail.com',
     github: 'https://github.com/harsh-parakh22',
-    linkedin: 'https://linkedin.com/in/harshparakh',
+    linkedin: 'https://linkedin.com/in/harsh-parakh22',
     repo: 'https://github.com/harsh-parakh22/AssetOps'
   };
 
