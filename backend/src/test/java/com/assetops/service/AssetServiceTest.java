@@ -40,6 +40,7 @@ class AssetServiceTest {
     @Mock AssetRepository assetRepository;
     @Mock UserRepository userRepository;
     @Mock SystemNotificationService systemNotificationService;
+    @Mock com.assetops.repository.AuditLogRepository auditLogRepository;
 
     @InjectMocks AssetServiceImpl assetService;
 
