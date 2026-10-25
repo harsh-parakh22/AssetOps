@@ -1,8 +1,10 @@
 {
-  "outputDirectory": "dist/assetops-frontend/browser",
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
-  "routes": [
-    { "handle": "filesystem" },
-    { "src": "/.*", "dest": "/index.html" }
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
   ]
 }

@@ -74,8 +74,18 @@ export const routes: Routes = [
     ]
   },
   {
-    path: 'forbidden',
-    loadComponent: () => import('./shared/components/forbidden/forbidden.component').then(m => m.ForbiddenComponent)
+    path: '503',
+    loadComponent: () => import('./shared/components/service-unavailable/service-unavailable.component').then(m => m.ServiceUnavailableComponent),
+    title: '503 Service Unavailable | AssetOps'
   },
-  { path: '**', redirectTo: '' }
+  {
+    path: '404',
+    loadComponent: () => import('./shared/components/not-found/not-found.component').then(m => m.NotFoundComponent),
+    title: '404 Page Not Found | AssetOps'
+  },
+  {
+    path: '**',
+    loadComponent: () => import('./shared/components/not-found/not-found.component').then(m => m.NotFoundComponent),
+    title: '404 Page Not Found | AssetOps'
+  }
 ];

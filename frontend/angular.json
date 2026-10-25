@@ -21,7 +21,9 @@
             "tsConfig": "tsconfig.app.json",
             "styles": ["src/styles.scss"],
             "assets": [
-              { "glob": "**/*", "input": "src/assets", "output": "assets" }
+              { "glob": "**/*", "input": "src/assets", "output": "assets" },
+              "src/404.html",
+              "src/503.html"
             ],
             "scripts": [],
             "optimization": {
