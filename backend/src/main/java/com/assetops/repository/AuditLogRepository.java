@@ -13,4 +13,5 @@ public interface AuditLogRepository extends JpaRepository<AuditLog, UUID> {
     Page<AuditLog> findByEntityTypeAndEntityIdOrderByCreatedAtDesc(
         String entityType, UUID entityId, Pageable pageable);
     Page<AuditLog> findByPerformedByOrderByCreatedAtDesc(String performedBy, Pageable pageable);
+    Page<AuditLog> findAllByOrderByCreatedAtDesc(Pageable pageable);
 }

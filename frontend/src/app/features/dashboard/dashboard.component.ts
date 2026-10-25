@@ -133,6 +133,27 @@ import { DashboardStats, Asset, AssetRequest } from '../../shared/models';
             No recent activity
           </div>
         </div>
+
+        <!-- Audit Trail Glimpse -->
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">Audit Log Glimpse</div>
+            <a routerLink="/audit" class="view-all-link" style="font-size: 11.5px; color: var(--accent); text-decoration: none;">View All &rarr;</a>
+          </div>
+          <div class="activity-item" *ngFor="let log of recentAuditLogs()">
+            <div class="a-dot" style="background: var(--accent);"></div>
+            <div class="a-body">
+              <div class="a-text">
+                <strong>{{ log.action }}</strong> on {{ log.entityType }}
+                <span class="text-muted" *ngIf="log.newValue" style="display: block; font-size: 11px;">{{ log.newValue }}</span>
+              </div>
+              <div class="a-time">{{ log.createdAt | date:'shortTime' }} &bull; {{ log.performedBy }}</div>
+            </div>
+          </div>
+          <div class="empty-activity" *ngIf="!recentAuditLogs().length">
+            No audit events recorded yet
+          </div>
+        </div>
       </div>
     </div>
   `,
@@ -144,6 +165,7 @@ export class DashboardComponent implements OnInit {
   stats = signal<DashboardStats | null>(null);
   recentAssets = signal<Asset[]>([]);
   recentRequests = signal<AssetRequest[]>([]);
+  recentAuditLogs = signal<any[]>([]);
   activeFilter = signal<'ALL' | 'HARDWARE' | 'LICENSE'>('ALL');
 
   get currentQuarter(): string {
@@ -184,6 +206,12 @@ export class DashboardComponent implements OnInit {
 
     this.api.getRequests({ page: 0, size: 4 })
       .subscribe(r => this.recentRequests.set(r.content));
+
+    this.api.getAuditLogs({ page: 0, size: 4 })
+      .subscribe({
+        next: r => this.recentAuditLogs.set(r.content || []),
+        error: () => this.recentAuditLogs.set([])
+      });
   }
 
   setFilter(f: 'ALL' | 'HARDWARE' | 'LICENSE'): void {

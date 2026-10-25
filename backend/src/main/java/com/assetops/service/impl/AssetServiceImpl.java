@@ -45,6 +45,7 @@ public class AssetServiceImpl implements AssetService {
     private final AssetRepository assetRepository;
     private final UserRepository userRepository;
     private final SystemNotificationService systemNotificationService;
+    private final com.assetops.repository.AuditLogRepository auditLogRepository;
 
     // Thread-safe sequence for tag generation
     private final AtomicLong tagSequence = new AtomicLong(
@@ -92,7 +93,7 @@ public class AssetServiceImpl implements AssetService {
         asset = assetRepository.save(asset);
         log.info("Asset created: {} [{}]", asset.getName(), asset.getAssetTag());
 
-
+        recordAuditLog("Asset", asset.getId(), "CREATE", null, asset.getAssetTag() + " (" + asset.getName() + ")");
 
         return AssetResponse.from(asset);
     }
@@ -102,6 +103,7 @@ public class AssetServiceImpl implements AssetService {
     @CacheEvict(value = {"assets", "asset-stats", "dashboard-stats"}, allEntries = true)
     public AssetResponse update(UUID id, AssetUpdateRequest req) {
         Asset asset = getAssetOrThrow(id);
+        String oldVal = asset.getName() + " [" + asset.getStatus() + "]";
 
         if (req.name() != null) asset.setName(req.name());
         if (req.description() != null) asset.setDescription(req.description());
@@ -116,7 +118,7 @@ public class AssetServiceImpl implements AssetService {
         updateLifecycleStage(asset);
         asset = assetRepository.save(asset);
 
-
+        recordAuditLog("Asset", asset.getId(), "UPDATE", oldVal, asset.getName() + " [" + asset.getStatus() + "]");
 
         return AssetResponse.from(asset);
     }
@@ -138,6 +140,8 @@ public class AssetServiceImpl implements AssetService {
         asset.setStatus(AssetStatus.ASSIGNED);
         asset = assetRepository.save(asset);
 
+        recordAuditLog("Asset", asset.getId(), "ASSIGN", "AVAILABLE", "Assigned to " + user.getName() + " (" + user.getEmail() + ")");
+
         systemNotificationService.publishNotificationEvent(userId, user.getEmail(),
             "ASSET_ASSIGNED", "Asset Assigned",
             "'" + asset.getName() + "' (" + asset.getAssetTag() + ") has been assigned to you.",
@@ -157,11 +161,14 @@ public class AssetServiceImpl implements AssetService {
         }
 
         User previousUser = asset.getAssignedTo();
+        String prevUserDesc = previousUser != null ? previousUser.getName() : "Unknown";
 
         asset.setAssignedTo(null);
         asset.setAssignedDate(null);
         asset.setStatus(AssetStatus.AVAILABLE);
         asset = assetRepository.save(asset);
+
+        recordAuditLog("Asset", asset.getId(), "RETURN", "Assigned to " + prevUserDesc, "AVAILABLE");
 
         if (previousUser != null) {
             systemNotificationService.publishNotificationEvent(previousUser.getId(), previousUser.getEmail(),
@@ -171,6 +178,23 @@ public class AssetServiceImpl implements AssetService {
         }
 
         return AssetResponse.from(asset);
+    }
+
+    private void recordAuditLog(String entityType, UUID entityId, String action, String oldVal, String newVal) {
+        try {
+            String performedBy = currentUserEmail();
+            com.assetops.entity.AuditLog audit = com.assetops.entity.AuditLog.builder()
+                .entityType(entityType)
+                .entityId(entityId)
+                .action(action)
+                .oldValue(oldVal)
+                .newValue(newVal)
+                .performedBy(performedBy)
+                .build();
+            auditLogRepository.save(audit);
+        } catch (Exception e) {
+            log.warn("Failed to record audit log: {}", e.getMessage());
+        }
     }
 
     @Override

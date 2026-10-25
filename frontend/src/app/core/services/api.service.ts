@@ -157,4 +157,13 @@ export class ApiService {
   getUnreadCount(): Observable<{ count: number }> {
     return this.http.get<{ count: number }>(`${this.base}/notifications/unread-count`);
   }
+
+  // ─── Audit Trail ──────────────────────────────────────────
+  getAuditLogs(params?: { page?: number; size?: number; entityType?: string; entityId?: string }): Observable<PagedResponse<any>> {
+    let p = new HttpParams();
+    if (params) {
+      Object.entries(params).forEach(([k, v]) => { if (v != null) p = p.set(k, v.toString()); });
+    }
+    return this.http.get<PagedResponse<any>>(`${this.base}/audit`, { params: p });
+  }
 }

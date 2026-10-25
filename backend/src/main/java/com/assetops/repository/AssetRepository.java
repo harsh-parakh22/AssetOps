@@ -31,9 +31,14 @@ public interface AssetRepository extends JpaRepository<Asset, UUID> {
         SELECT a FROM Asset a
         WHERE (:status IS NULL OR a.status = :status)
         AND (:category IS NULL OR a.category = :category)
-        AND (:search IS NULL OR LOWER(a.name) LIKE LOWER(CONCAT('%', CAST(:search AS text), '%'))
+        AND (:search IS NULL OR (
+             LOWER(a.name) LIKE LOWER(CONCAT('%', CAST(:search AS text), '%'))
              OR LOWER(a.assetTag) LIKE LOWER(CONCAT('%', CAST(:search AS text), '%'))
-             OR LOWER(a.serialNumber) LIKE LOWER(CONCAT('%', CAST(:search AS text), '%')))
+             OR LOWER(a.serialNumber) LIKE LOWER(CONCAT('%', CAST(:search AS text), '%'))
+             OR LOWER(a.model) LIKE LOWER(CONCAT('%', CAST(:search AS text), '%'))
+             OR LOWER(a.manufacturer) LIKE LOWER(CONCAT('%', CAST(:search AS text), '%'))
+             OR LOWER(a.location) LIKE LOWER(CONCAT('%', CAST(:search AS text), '%'))
+        ))
         """)
     Page<Asset> searchAssets(
         @Param("status") AssetStatus status,

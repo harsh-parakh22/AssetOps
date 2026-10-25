@@ -210,8 +210,10 @@ export class ReportsComponent implements OnInit {
     const rows = this.categoryRows().map(e => [e.key, e.value, this.share(e.value) + '%']);
     const csv = [['Category', 'Count', 'Share'], ...rows].map(r => r.join(',')).join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-    a.download = 'itvault-report.csv'; a.click();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url;
+    a.download = 'assetops-report.csv'; a.click();
+    URL.revokeObjectURL(url);
   }
 
   exportPdf() {

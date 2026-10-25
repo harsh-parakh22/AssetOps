@@ -79,6 +79,7 @@ public class SecurityConfig {
                 // Admin only
                 .requestMatchers("/users/**").hasAnyRole("IT_ADMIN", "SUPER_ADMIN")
                 .requestMatchers("/reports/**").hasAnyRole("IT_ADMIN", "SUPER_ADMIN")
+                .requestMatchers("/audit/**").hasAnyRole("IT_ADMIN", "SUPER_ADMIN")
                 .requestMatchers("/dashboard/**").authenticated()
                 .requestMatchers("/lifecycle/**").hasAnyRole("IT_ADMIN", "SUPER_ADMIN")
                 .requestMatchers("/admin/**").hasRole("SUPER_ADMIN")

@@ -49,6 +49,12 @@ export const routes: Routes = [
         title: 'Lifecycle | AssetOps'
       },
       {
+        path: 'audit',
+        loadComponent: () => import('./features/audit/audit.component').then(m => m.AuditComponent),
+        canActivate: [adminGuard],
+        title: 'Audit Trail | AssetOps'
+      },
+      {
         path: 'users',
         loadComponent: () => import('./features/users/users.component').then(m => m.UsersComponent),
         canActivate: [adminGuard],

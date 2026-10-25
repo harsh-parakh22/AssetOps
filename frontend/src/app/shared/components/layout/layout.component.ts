@@ -138,6 +138,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
     { label: 'Inventory', icon: '◧', route: '/inventory', adminOnly: true },
     { label: 'Requests', icon: '◈', route: '/requests' },
     { label: 'Lifecycle', icon: '◎', route: '/lifecycle', adminOnly: true },
+    { label: 'Audit Trail', icon: '▤', route: '/audit', adminOnly: true },
     { label: 'Users', icon: '◉', route: '/users', adminOnly: true },
     { label: 'Reports', icon: '▣', route: '/reports', adminOnly: true }
   ];
@@ -166,17 +167,30 @@ export class LayoutComponent implements OnInit, OnDestroy {
     document.documentElement.setAttribute('data-theme', next);
   }
 
+  private searchNavTimeout: any;
+
   onSearch(event: Event): void {
     const input = event.target as HTMLInputElement;
     this.searchQuery = input.value;
     
-    // If Enter is pressed, navigate to inventory with search param
-    if ((event as any).key === 'Enter' || event.type === 'change') {
+    if (this.searchNavTimeout) clearTimeout(this.searchNavTimeout);
+
+    // If Enter is pressed, navigate immediately
+    if ((event as any).key === 'Enter') {
       this.router.navigate(['/inventory'], { 
-        queryParams: { search: this.searchQuery },
+        queryParams: { search: this.searchQuery.trim() || null },
         queryParamsHandling: 'merge'
       });
+      return;
     }
+
+    // Debounce live typing (after 300ms)
+    this.searchNavTimeout = setTimeout(() => {
+      this.router.navigate(['/inventory'], { 
+        queryParams: { search: this.searchQuery.trim() || null },
+        queryParamsHandling: 'merge'
+      });
+    }, 300);
   }
 
   initials(): string {

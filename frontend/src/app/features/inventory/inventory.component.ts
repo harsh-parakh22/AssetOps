@@ -282,14 +282,21 @@ export class InventoryComponent implements OnInit {
     });
   }
 
+  private searchTimeout: any;
+
   onFilterChange(): void {
-    this.currentPage.set(0);
-    this.loadAssets();
+    if (this.searchTimeout) clearTimeout(this.searchTimeout);
+    this.searchTimeout = setTimeout(() => {
+      this.currentPage.set(0);
+      this.loadAssets();
+    }, 250);
   }
 
   clearFilters(): void {
+    if (this.searchTimeout) clearTimeout(this.searchTimeout);
     this.filters = { search: '', status: '', category: '' };
-    this.onFilterChange();
+    this.currentPage.set(0);
+    this.loadAssets();
   }
 
   changePage(page: number): void {
