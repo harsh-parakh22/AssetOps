@@ -29,11 +29,9 @@ spring:
   data:
     redis:
       url: ${SPRING_REDIS_URL:redis://localhost:6379}
-      timeout: 2000ms
+      timeout: 1000ms
       repositories:
         enabled: false
-
-
 
   session:
     store-type: none
@@ -67,6 +65,9 @@ management:
       show-details: always
     prometheus:
       enabled: true
+  health:
+    redis:
+      enabled: false
 
 app:
   cors:
