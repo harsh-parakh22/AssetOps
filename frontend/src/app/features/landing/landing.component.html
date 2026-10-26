@@ -347,26 +347,20 @@
             <thead>
               <tr>
                 <th class="col-feature">Operational Requirement</th>
+                <th class="col-other">Legacy Service Desks</th>
+                <th class="col-other">Open-Source ITAM</th>
+                <th class="col-other">Spreadsheets</th>
                 <th class="col-assetops highlight-header">
                   <div class="assetops-header-badge">
                     <span>AssetOps</span>
                   </div>
                 </th>
-                <th class="col-other">Legacy Service Desks</th>
-                <th class="col-other">Open-Source ITAM</th>
-                <th class="col-other">Spreadsheets</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let row of comparisonData">
                 <td class="col-feature">
                   <strong>{{ row.capability }}</strong>
-                </td>
-                <td class="col-assetops highlight-cell">
-                  <div class="cell-primary">
-                    <span class="badge-success">&#10003; {{ row.assetops }}</span>
-                  </div>
-                  <div class="cell-note">{{ row.assetopsNote }}</div>
                 </td>
                 <td class="col-other">
                   <span class="badge-warn">{{ row.servicenow }}</span>
@@ -376,6 +370,12 @@
                 </td>
                 <td class="col-other">
                   <span class="badge-danger">{{ row.excel }}</span>
+                </td>
+                <td class="col-assetops highlight-cell">
+                  <div class="cell-primary">
+                    <span class="badge-success">&#10003; {{ row.assetops }}</span>
+                  </div>
+                  <div class="cell-note">{{ row.assetopsNote }}</div>
                 </td>
               </tr>
             </tbody>
