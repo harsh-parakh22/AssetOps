@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -71,13 +71,14 @@ interface NavItem {
           <button class="menu-btn" (click)="toggleSidebar()">☰</button>
           <div class="topbar-spacer"></div>
 
-          <div class="search-box">
+          <div class="search-box" (click)="focusSearch()">
             <span class="search-icon">⌕</span>
-            <input type="text" placeholder="Search assets..."
+            <input #topSearchInput type="text" placeholder="Search assets (Press Ctrl+K)..."
                    [value]="searchQuery"
                    (input)="onSearch($event)"
                    (keyup.enter)="onSearch($event)"
                    class="search-input" />
+            <kbd class="kbd-shortcut">Ctrl K</kbd>
           </div>
 
           <button class="theme-btn" (click)="toggleTheme()" [title]="theme() === 'dark' ? 'Light mode' : 'Dark mode'">
@@ -144,6 +145,21 @@ export class LayoutComponent implements OnInit, OnDestroy {
   ];
 
   private sub?: Subscription;
+
+  @ViewChild('topSearchInput') topSearchInput?: ElementRef<HTMLInputElement>;
+
+  @HostListener('window:keydown', ['$event'])
+  handleGlobalShortcuts(event: KeyboardEvent): void {
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+      event.preventDefault();
+      this.focusSearch();
+    }
+  }
+
+  focusSearch(): void {
+    this.topSearchInput?.nativeElement.focus();
+    this.topSearchInput?.nativeElement.select();
+  }
 
   ngOnInit(): void {
     this.ws.connect();

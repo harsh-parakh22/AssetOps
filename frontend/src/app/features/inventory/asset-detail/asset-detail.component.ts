@@ -104,6 +104,21 @@ import { Asset, AssetCategory, User } from '../../../shared/models';
           </ng-template>
         </div>
 
+        <!-- Printable QR Code & Tag -->
+        <div class="panel" style="margin-bottom:16px">
+          <div class="panel-header">
+            <div class="panel-title">Asset Tag & QR Badge</div>
+            <button class="btn btn-ghost" style="padding:4px 8px;font-size:11px" (click)="printBadge()">🖨️ Print Label</button>
+          </div>
+          <div style="padding:16px;text-align:center">
+            <div id="printable-asset-badge" style="display:inline-block;padding:12px;background:#ffffff;border:1px dashed #cbd5e1;border-radius:10px">
+              <img [src]="getQrCodeUrl(asset()!.assetTag)" alt="Asset QR Code" width="130" height="130" style="display:block;margin:0 auto 8px" />
+              <div style="font-family:var(--font-mono);font-size:13px;font-weight:700;color:#0f172a">{{ asset()!.assetTag }}</div>
+              <div style="font-size:11px;color:#64748b">{{ asset()!.name }}</div>
+            </div>
+          </div>
+        </div>
+
         <div class="panel">
           <div class="panel-header"><div class="panel-title">Audit Trail</div></div>
           <div style="padding:12px 16px;font-size:12px;color:var(--text3)">
@@ -350,6 +365,39 @@ export class AssetDetailComponent implements OnInit {
     if (!rd) return false;
     const diff = new Date(rd).getTime() - Date.now();
     return diff > 0 && diff < 60 * 24 * 60 * 60 * 1000;
+  }
+
+  getQrCodeUrl(tag: string): string {
+    const targetUrl = window.location.origin + '/inventory/' + this.id();
+    return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(targetUrl)}&margin=4`;
+  }
+
+  printBadge(): void {
+    const printContent = document.getElementById('printable-asset-badge');
+    if (!printContent) return;
+    const printWindow = window.open('', '', 'width=450,height=500');
+    if (!printWindow) return;
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Asset Tag - ${this.asset()?.assetTag}</title>
+          <style>
+            body { font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+            .badge { text-align: center; border: 2px dashed #000; padding: 20px; border-radius: 8px; width: 200px; }
+            .tag { font-family: monospace; font-size: 16px; font-weight: bold; margin-top: 8px; }
+            .name { font-size: 12px; color: #444; margin-top: 4px; }
+          </style>
+        </head>
+        <body onload="window.print(); window.close();">
+          <div class="badge">
+            <img src="${this.getQrCodeUrl(this.asset()?.assetTag || '')}" width="160" height="160" />
+            <div class="tag">${this.asset()?.assetTag || ''}</div>
+            <div class="name">${this.asset()?.name || ''}</div>
+          </div>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
   }
 
   initials(name: string): string {
