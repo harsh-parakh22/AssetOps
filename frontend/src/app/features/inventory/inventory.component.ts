@@ -178,16 +178,27 @@ import { Asset, AssetStatus, AssetCategory, PagedResponse, User } from '../../sh
     <div class="modal-backdrop" *ngIf="showAssignModal()" (click)="closeAssignModal()">
       <div class="modal modal-sm" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <h2 class="modal-title">Assign Asset</h2>
+          <div>
+            <h2 class="modal-title">Assign Equipment</h2>
+            <div style="font-size:12px;color:var(--text3);margin-top:2px">Select an employee to allocate this item</div>
+          </div>
           <button class="modal-close" (click)="closeAssignModal()">✕</button>
         </div>
         <div class="modal-body">
-          <p class="review-info">Assigning <strong>{{ assigningAsset()?.name }}</strong> ({{ assigningAsset()?.assetTag }})</p>
+          <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;margin-bottom:16px">
+            <div style="font-size:24px">💻</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ assigningAsset()?.name }}</div>
+              <div style="font-size:11px;color:var(--text3);font-family:var(--font-mono)">{{ assigningAsset()?.assetTag }} · {{ assigningAsset()?.category }}</div>
+            </div>
+            <span class="chip available">Available</span>
+          </div>
+
           <div class="form-group">
-            <label>Search User</label>
+            <label>Find Employee</label>
             <div class="search-field">
               <span>⌕</span>
-              <input type="text" placeholder="Name or email..." [(ngModel)]="userSearch" (ngModelChange)="loadUsersForAssign()" />
+              <input type="text" placeholder="Type name or email..." [(ngModel)]="userSearch" (ngModelChange)="loadUsersForAssign()" />
             </div>
           </div>
           <div class="user-list-mini" *ngIf="users().length; else noUsers">
@@ -197,11 +208,14 @@ import { Asset, AssetStatus, AssetCategory, PagedResponse, User } from '../../sh
                 <div class="u-name">{{ user.name }}</div>
                 <div class="u-email">{{ user.email }}</div>
               </div>
-              <span class="assign-hint">Click to Assign</span>
+              <span class="assign-hint">Assign →</span>
             </div>
           </div>
           <ng-template #noUsers>
-            <div class="empty-row" style="padding: 20px 0">No users found</div>
+            <div class="empty-row" style="padding: 24px 0">
+              <div style="font-size:20px;margin-bottom:6px">👥</div>
+              <div>No matching employees found</div>
+            </div>
           </ng-template>
         </div>
         <div class="modal-footer">
