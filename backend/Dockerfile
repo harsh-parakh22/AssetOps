@@ -11,8 +11,8 @@ WORKDIR /app
 COPY --from=builder /app/target/*.jar app.jar
 ENV PORT=8080
 EXPOSE $PORT
-ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XX:+UseG1GC -Djava.security.egd=file:/dev/./urandom"
+ENV JAVA_OPTS="-XX:+UseContainerSupport -Xms128m -Xmx256m -XX:MaxMetaspaceSize=128m -XX:+UseSerialGC -XX:TieredStopAtLevel=1 -Djava.security.egd=file:/dev/./urandom"
 USER assetops
-HEALTHCHECK --interval=30s --timeout=10s --start-period=90s --retries=5 \
+HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=5 \
   CMD wget -qO- http://localhost:$PORT/api/actuator/health | grep -q UP || exit 1
 ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar app.jar"]
